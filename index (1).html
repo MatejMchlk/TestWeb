@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jedálny lístok</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍲</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F4EE; --surface:#FFFFFF; --surface-2:#E7ECE2; --surface-3:#DCE4D5;
+  --ink:#16231B; --ink-2:#4A5A4F; --ink-3:#77867B; --line:#D3DCCD;
+  --basil:#2D6A4C; --basil-2:#245A40; --on-basil:#FFFFFF; --basil-soft:#DCEBDF;
+  --saffron:#E0A030; --saffron-soft:#F8E8C6; --tomato:#C2412F; --tomato-soft:#F6DDD7;
+  --veg:#557F25; --vegan:#1F7F63;
+  --shadow:0 1px 2px rgba(22,35,27,.06), 0 8px 24px -12px rgba(22,35,27,.18);
+  --font-d:"Young Serif", Georgia, "Times New Roman", serif;
+  --font-b:"Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#101813; --surface:#18221C; --surface-2:#202D25; --surface-3:#2A3A30;
+    --ink:#E8EFE9; --ink-2:#AEBDB2; --ink-3:#83958A; --line:#2D3C33;
+    --basil:#74C095; --basil-2:#8BD1A8; --on-basil:#0C1A12; --basil-soft:#1F3A2B;
+    --saffron:#F0B955; --saffron-soft:#3A2F17; --tomato:#EC7B66; --tomato-soft:#3D221D;
+    --veg:#A6CF6B; --vegan:#6FD1B0;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--font-b);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--font-d);font-weight:400;line-height:1.15;margin:0}
+p{margin:0}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:2px;border-radius:6px}
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 20px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);margin-top:calc(-1 * env(safe-area-inset-top,0px))}
+.topbar-in{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--font-d);font-size:1.25rem}
+.brand-mark{width:36px;height:36px;border-radius:50%;background:var(--basil);color:var(--on-basil);display:grid;place-items:center}
+.brand-mark svg{width:20px;height:20px}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:10px 18px;font-weight:600;font-size:.95rem;cursor:pointer;background:var(--basil);color:var(--on-basil);text-decoration:none;line-height:1.2;transition:background .15s, transform .1s}
+.btn:hover{background:var(--basil-2)}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn-soft{background:var(--surface-2);color:var(--ink)}
+.btn-soft:hover{background:var(--surface-3)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{background:var(--surface-2)}
+.btn-danger{background:var(--tomato-soft);color:var(--tomato)}
+.btn-danger:hover{background:var(--tomato);color:#fff}
+.btn-sm{padding:7px 13px;font-size:.85rem}
+.icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;flex:none}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn svg{width:20px;height:20px}
+.linklike{background:none;border:0;padding:0;color:var(--basil);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-weight:500}
+.count{background:var(--saffron);color:#2B1D05;border-radius:999px;font-size:.75rem;padding:1px 8px;font-weight:700}
+
+/* ---------- week bar ---------- */
+.weekbar{display:flex;align-items:center;gap:14px;padding:28px 0 18px}
+.week-label{flex:1;min-width:0}
+.week-label h1{font-size:clamp(1.6rem,4vw,2.3rem)}
+.week-label p{color:var(--ink-2);margin-top:2px}
+
+/* ---------- day strip (the signature element) ---------- */
+.daystrip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding-bottom:6px}
+.day-tab{position:relative;border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 10px 12px 14px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:96px;transition:border-color .15s, background .15s}
+.day-tab:hover{border-color:var(--basil)}
+.day-tab .dn{font-size:.85rem;color:var(--ink-2);font-weight:600}
+.day-tab .dd{font-family:var(--font-d);font-size:2.3rem;line-height:1}
+.day-tab .dm{font-size:.8rem;color:var(--ink-3)}
+.day-tab[aria-current="true"]{background:var(--basil);border-color:var(--basil);color:var(--on-basil)}
+.day-tab[aria-current="true"] .dn,.day-tab[aria-current="true"] .dm{color:inherit;opacity:.85}
+.day-tab.past:not([aria-current="true"]){opacity:.62}
+.day-tab .today-dot{position:absolute;top:12px;right:12px;font-size:.7rem;font-weight:700;background:var(--saffron);color:#2B1D05;border-radius:999px;padding:1px 8px}
+.day-tab .ord-dot{position:absolute;bottom:12px;right:12px;width:22px;height:22px;border-radius:50%;background:var(--saffron-soft);color:var(--ink);display:grid;place-items:center}
+.day-tab[aria-current="true"] .ord-dot{background:rgba(255,255,255,.22);color:inherit}
+.day-tab .ord-dot svg{width:13px;height:13px}
+
+/* ---------- day view ---------- */
+.day-head{display:grid;grid-template-columns:1fr auto;gap:12px 24px;align-items:end;padding:30px 0 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.day-head h2{font-size:clamp(1.9rem,5vw,3rem)}
+.day-head .sub{color:var(--ink-2);margin-top:6px;font-size:1.05rem}
+.day-intro{grid-column:1/-1;max-width:70ch;padding:14px 18px;border-radius:14px;background:var(--surface-2);display:flex;gap:14px}
+.day-intro strong{display:block;font-family:var(--font-d);font-weight:400;font-size:1.15rem;margin-bottom:2px}
+.day-intro p{color:var(--ink-2)}
+.deadline{display:inline-flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;background:var(--basil-soft);color:var(--basil);white-space:nowrap}
+.deadline.closed{background:var(--surface-2);color:var(--ink-2)}
+.deadline svg{width:16px;height:16px}
+
+.cat{padding:26px 0 4px}
+.cat-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.cat-head h3{font-size:1.45rem}
+.cat-head .n{color:var(--ink-3);font-size:.9rem}
+.cat-swatch{width:12px;height:12px;border-radius:4px;flex:none;align-self:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+
+/* ---------- meal card ---------- */
+.meal{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--line)}
+.meal.is-off{opacity:.72}
+.photo-btn{all:unset;cursor:zoom-in;display:block;position:relative;aspect-ratio:4/3;background:var(--surface-2);overflow:hidden}
+.photo-btn:focus-visible{outline:3px solid var(--saffron);outline-offset:-3px}
+.photo-btn img{width:100%;height:100%;object-fit:cover}
+.photo-tags{position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface);color:var(--ink)}
+.tag svg{width:12px;height:12px}
+.tag.veg{color:var(--veg)} .tag.vegan{color:var(--vegan)}
+.tag.mine{background:var(--saffron);color:#2B1D05}
+.ph{width:100%;height:100%;display:grid;place-items:center;color:var(--ink-3)}
+.ph svg{width:30%;height:auto;opacity:.75}
+.meal-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.meal-body h4{font-family:var(--font-d);font-weight:400;font-size:1.2rem;line-height:1.25;margin:0}
+.meal-desc{color:var(--ink-2);font-size:.93rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.facts{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.85rem;color:var(--ink-2)}
+.facts b{color:var(--ink);font-weight:600}
+.alg{display:inline-flex;flex-wrap:wrap;gap:4px;vertical-align:middle}
+.alg span{min-width:22px;height:22px;padding:0 5px;border-radius:6px;background:var(--surface-2);color:var(--ink);font-size:.75rem;font-weight:700;display:inline-grid;place-items:center}
+.rating{display:inline-flex;align-items:center;gap:4px;font-size:.85rem;color:var(--ink-2)}
+.rating svg{width:15px;height:15px;color:var(--saffron)}
+.meal-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:6px;border-top:1px dashed var(--line)}
+.price{font-family:var(--font-d);font-size:1.3rem}
+.avail{font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:6px}
+.avail::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.avail.ok{color:var(--basil)} .avail.low{color:var(--saffron)} .avail.sold,.avail.off{color:var(--tomato)} .avail.closed{color:var(--ink-3)}
+.foot-left{display:flex;flex-direction:column;gap:2px}
+
+.empty{padding:60px 20px;text-align:center;color:var(--ink-2);max-width:46ch;margin:0 auto}
+.empty h3{font-size:1.5rem;color:var(--ink);margin-bottom:8px}
+.skeleton{border-radius:20px;background:linear-gradient(90deg,var(--surface-2),var(--surface-3),var(--surface-2));background-size:200% 100%;animation:sh 1.4s infinite;aspect-ratio:4/5}
+@keyframes sh{to{background-position:-200% 0}}
+@media (prefers-reduced-motion: reduce){.skeleton{animation:none}*{transition:none!important}}
+
+.edupage{margin:40px 0 10px;padding:26px;border-radius:24px;background:var(--basil);color:var(--on-basil);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.edupage h3{font-size:1.5rem;margin-bottom:4px}
+.edupage p{opacity:.85;max-width:52ch}
+.btn-edu{background:var(--on-basil);color:var(--basil);padding:15px 26px;font-size:1.05rem}
+.btn-edu:hover{background:var(--saffron);color:#2B1D05}
+.btn-edu svg{width:18px;height:18px}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:48px 20px 40px;color:var(--ink-3);font-size:.9rem}
+
+/* ---------- dialogs ---------- */
+dialog.dlg{border:0;padding:0;border-radius:24px;background:var(--surface);color:var(--ink);width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 32px);box-shadow:0 30px 80px -20px rgba(0,0,0,.45)}
+dialog.dlg-wide{width:min(900px,calc(100vw - 24px))}
+dialog.dlg-small{width:min(420px,calc(100vw - 24px))}
+dialog.dlg::backdrop{background:rgba(10,20,14,.55);backdrop-filter:blur(3px)}
+dialog.dlg[open]{animation:pop .18s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 22px 0}
+.dlg-head h2{font-size:1.5rem}
+.dlg-body{padding:18px 22px 22px}
+.dlg-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding-top:18px}
+dialog.drawer{margin:0 0 0 auto;height:100dvh;max-height:100dvh;border-radius:24px 0 0 24px;width:min(460px,100vw)}
+dialog.drawer[open]{animation:slide .22s ease-out}
+@keyframes slide{from{transform:translateX(30px);opacity:0}}
+dialog.fullscreen{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0;margin:0;background:var(--bg)}
+
+.detail{display:grid;grid-template-columns:1.25fr 1fr}
+.detail-photo{aspect-ratio:4/3;background:var(--surface-2);position:relative}
+.detail-photo img{width:100%;height:100%;object-fit:cover}
+.detail-info{padding:24px;display:flex;flex-direction:column;gap:14px}
+.detail-info h2{font-size:1.7rem}
+.close-float{position:absolute;top:12px;right:12px;background:var(--surface);z-index:2}
+.alg-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:.9rem}
+.alg-list li{display:flex;gap:8px;align-items:center}
+@media (max-width:760px){.detail{grid-template-columns:1fr}}
+
+/* forms */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label,.field .lbl{font-weight:600;font-size:.9rem}
+.field .hint{font-size:.8rem;color:var(--ink-3)}
+.input,select.input,textarea.input{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;min-height:44px}
+textarea.input{min-height:84px;resize:vertical}
+.input:focus{outline:2px solid var(--basil);outline-offset:0;border-color:transparent}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0 14px}
+.check{display:flex;align-items:center;gap:8px;font-size:.92rem;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--basil)}
+.alg-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px 12px}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.stepper button{width:44px;height:44px;border:0;background:var(--surface-2);cursor:pointer;font-size:1.2rem}
+.stepper output{min-width:48px;text-align:center;font-weight:700}
+.order-sum{display:flex;gap:14px;align-items:center;padding:12px;border-radius:16px;background:var(--surface-2);margin-bottom:18px}
+.order-sum .thumb{width:84px;flex:none;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--surface-3)}
+.order-sum .thumb img{width:100%;height:100%;object-fit:cover}
+
+/* my orders */
+.mo-list{display:flex;flex-direction:column;gap:12px}
+.mo{display:grid;grid-template-columns:72px 1fr;gap:12px;padding:12px;border:1px solid var(--line);border-radius:16px}
+.mo .thumb{aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--surface-2)}
+.mo .thumb img{width:100%;height:100%;object-fit:cover}
+.mo h4{margin:0 0 2px;font-size:1rem}
+.mo .meta{font-size:.85rem;color:var(--ink-2)}
+.mo .acts{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.mo.cancelled{opacity:.55}
+.stars{display:inline-flex;gap:2px}
+.stars button{background:none;border:0;padding:2px;cursor:pointer;color:var(--line)}
+.stars button.on{color:var(--saffron)}
+.stars svg{width:22px;height:22px}
+
+/* toasts */
+.toasts{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:9999;width:min(440px,calc(100vw - 24px));pointer-events:none}
+.toast{background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:14px;font-weight:500;box-shadow:var(--shadow);animation:pop .2s ease-out}
+.toast.err{background:var(--tomato);color:#fff}
+
+/* setup screen */
+.setup{max-width:640px;margin:60px auto;background:var(--surface);border-radius:24px;padding:28px;border:1px solid var(--line)}
+.setup h1{font-size:1.9rem;margin-bottom:10px}
+.setup ol{padding-left:20px;color:var(--ink-2)}
+.setup code{background:var(--surface-2);padding:2px 6px;border-radius:6px;font-size:.9em}
+
+@media (max-width:760px){
+  .wrap{padding:0 14px}
+  .daystrip{grid-template-columns:repeat(5,minmax(76px,1fr));overflow-x:auto;scroll-snap-type:x mandatory}
+  .day-tab{min-height:84px;padding:10px;scroll-snap-align:start}
+  .day-tab .dd{font-size:1.8rem}
+  .day-tab .today-dot{top:8px;right:8px}
+  .day-head{grid-template-columns:1fr}
+  .weekbar{padding-top:18px}
+  .grid{grid-template-columns:1fr}
+}
+@media print{.topbar,.foot,.weekbar,.daystrip{display:none}}
+
+a.btn{text-decoration:none}
+.top-right{display:flex;align-items:center;gap:10px}
+.user-chip{display:flex;align-items:center;gap:10px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--saffron);color:#2B1D05;display:grid;place-items:center;font-weight:700;font-size:.9rem;flex:none}
+.user-name{font-weight:600;font-size:.92rem;line-height:1.2}
+.user-name small{display:block;font-weight:400;color:var(--ink-3);font-size:.78rem}
+.login-note{font-size:.82rem;color:var(--ink-3);margin-top:4px}
+.greet{font-size:.95rem;color:var(--ink-2);margin-top:8px}
+@media (max-width:560px){.user-name{display:none}#topEdu{display:none}}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:0 18px}
+.cats .cat{display:flex;flex-direction:column}
+.cats .cat .grid{flex:1;grid-template-columns:1fr}
+.cats .cat .meal{height:100%}
+.cats .cat.wide{grid-column:1/-1}
+.cats .cat.wide .grid{grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.photo-btn img{transition:opacity .25s}
+.photo-btn img[data-pending]{opacity:0}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#" id="brandLink">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18a9 9 0 0 1-18 0Z"/><path d="M8 7c0-1.5 1-2 1-3.5M12 7c0-1.5 1-2 1-3.5M16 7c0-1.5 1-2 1-3.5"/></svg></span>
+      <span id="brandName">Jedáleň</span>
+    </a>
+    <div class="top-right">
+      <a class="btn btn-ghost btn-sm" id="topEdu" data-act="order" target="_blank" rel="noopener noreferrer">EduPage</a>
+      <div id="authBox"></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="weekbar" aria-label="Výber týždňa">
+    <button class="icon-btn" data-act="week" data-dir="-1" aria-label="Predchádzajúci týždeň"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg></button>
+    <div class="week-label"><h1 id="weekTitle">Jedálny lístok</h1><p id="weekRange">&nbsp;</p></div>
+    <button class="btn btn-soft btn-sm" data-act="week-today" id="btnThisWeek" hidden>Tento týždeň</button>
+    <button class="icon-btn" data-act="week" data-dir="1" aria-label="Nasledujúci týždeň"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>
+  </section>
+  <nav class="daystrip" id="dayStrip" aria-label="Dni v týždni"></nav>
+  <section id="dayView" aria-live="polite"></section>
+</main>
+
+<footer class="wrap foot">
+  <p>Alergény sú označené číslami podľa nariadenia EÚ č. 1169/2011. <button class="linklike" data-act="allergens">Zoznam alergénov</button></p>
+  <p>Fotky jedál sú ilustračné.</p>
+</footer>
+
+<dialog id="dlg-detail" class="dlg dlg-wide"></dialog>
+<dialog id="dlg-info" class="dlg"></dialog>
+<dialog id="dlg-login" class="dlg dlg-small"></dialog>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   NASTAVENIA – tu si môžete upraviť názov jedálne a odkaz na EduPage
+   ===================================================================== */
+const CANTEEN_NAME = "Jedáleň Pod Lipami";
+const EDUPAGE_URL  = "https://www.edupage.org/";   // napr. https://vasaskola.edupage.org/menu/
+const ORDER_DEADLINE = "9:30";                       // len informácia na stránke
+
+/* =====================================================================
+   JEDÁLNY LÍSTOK
+   Pondelok až štvrtok sa opakuje každý týždeň.
+   Piatok: z každej kategórie sa náhodne vyberie jedno jedlo
+   (pre každý týždeň iný výber, počas týždňa sa nemení).
+   Alergény: čísla 1 – 14, hmotnosť a cena podľa potreby.
+   ===================================================================== */
+const CATEGORIES = [
+  {name:"Polievky", kind:"soup"},
+  {name:"Menu A", kind:"main"},
+  {name:"Menu B", kind:"main"},
+  {name:"Menu C", kind:"main"},
+  {name:"Menu D", kind:"main"},
+  {name:"BZLMS", kind:"main"},
+  {name:"Vegetariánske jedlá", kind:"vegetarian"},
+  {name:"VEG", kind:"vegetarian"},
+  {name:"Vegánske jedlá", kind:"vegan"},
+  {name:"Prílohy a doplnky", kind:"side"}
+];
+
+const WEEK_MENU = [
+  { // PONDELOK
+    headline:"Ľahký štart do týždňa",
+    description:"Paradajková polievka s bazalkou, grilované kuracie prsia a krémové cícerové kari. Veľa zeleniny a nič ťažké na pondelok.",
+    meals:[
+      {cat:"Polievky", name:"Paradajková polievka s bazalkou", desc:"Krémová polievka z pečených paradajok, dochutená čerstvou bazalkou a kvapkou smotany.", weight:"0,33 l", alg:[7,9], price:0.90, veg:true},
+      {cat:"Menu A", name:"Grilované kuracie prsia, ryža s hráškom", desc:"Šťavnaté kuracie prsia marinované v cesnaku a tymiane, k tomu dusená ryža so zeleným hráškom.", weight:"150 g / 200 g", alg:[], price:4.90},
+      {cat:"Menu B", name:"Bravčový guláš, kysnutá knedľa", desc:"Pomaly dusený bravčový guláš so sladkou paprikou a rascou, podávaný s domácou knedľou.", weight:"150 g / 4 ks", alg:[1,3,7], price:5.20},
+      {cat:"Vegetariánske jedlá", name:"Vyprážaný syr, varené zemiaky, tatárska omáčka", desc:"Eidam v zlatistom cestíčku, varené zemiaky s petržlenovou vňaťou a domáca tatárska omáčka.", weight:"120 g / 200 g", alg:[1,3,7,10], price:4.70, veg:true},
+      {cat:"Vegánske jedlá", name:"Cícerové kari s jazmínovou ryžou", desc:"Cícer v kokosovej omáčke s rajčinami, zázvorom a koriandrom, podávaný s jazmínovou ryžou.", weight:"300 g", alg:[], price:4.60, veg:true, vegan:true},
+      {cat:"Prílohy a doplnky", name:"Uhorkový šalát", desc:"Tenko krájané uhorky v jemnom sladkokyslom náleve s koprom.", weight:"100 g", alg:[], price:0.80, veg:true, vegan:true}
+    ]
+  },
+  { // UTOROK
+    headline:"Domáca klasika",
+    description:"Poctivý hovädzí vývar, chrumkavý rezeň so zemiakovým šalátom a pre milovníkov rýb pečený losos.",
+    meals:[
+      {cat:"Polievky", name:"Hovädzí vývar s rezancami", desc:"Číry hovädzí vývar varený niekoľko hodín, s mrkvou, petržlenom a domácimi rezancami.", weight:"0,33 l", alg:[1,3,9], price:0.90},
+      {cat:"Menu A", name:"Vyprážaný kurací rezeň, zemiakový šalát", desc:"Kurací rezeň v chrumkavej strúhanke so zemiakovým šalátom a plátkom citróna.", weight:"150 g / 200 g", alg:[1,3,7,10], price:5.10},
+      {cat:"Menu B", name:"Špagety bolonese so syrom", desc:"Špagety s mäsovou omáčkou z hovädzieho mäsa, paradajok a bylín, posypané syrom.", weight:"350 g", alg:[1,7,9], price:4.80},
+      {cat:"Menu C", name:"Pečený losos, opekané zemiaky", desc:"Filet z lososa pečený s citrónovým maslom, opekané zemiaky a listový šalát.", weight:"120 g / 200 g", alg:[4,7], price:6.90},
+      {cat:"Vegetariánske jedlá", name:"Zeleninové rizoto s parmezánom", desc:"Krémové rizoto so zelenými fazuľkami, hráškom a cuketou, dokončené parmezánom.", weight:"320 g", alg:[7,9], price:4.50, veg:true},
+      {cat:"Prílohy a doplnky", name:"Ovocný šalát", desc:"Čerstvé sezónne ovocie s mätou a kvapkou limetky.", weight:"150 g", alg:[], price:1.20, veg:true, vegan:true}
+    ]
+  },
+  { // STREDA
+    headline:"Stredajšia sviečková",
+    description:"Brokolicový krém, sviečková na smotane s brusnicami a bryndzové halušky bez slaniny pre vegetariánov.",
+    meals:[
+      {cat:"Polievky", name:"Brokolicový krém s krutónmi", desc:"Hustá krémová polievka z brokolice so smotanou a chrumkavými krutónmi.", weight:"0,33 l", alg:[1,7], price:0.90, veg:true},
+      {cat:"Menu A", name:"Sviečková na smotane, knedľa, brusnice", desc:"Hovädzie mäso na koreňovej zelenine so smotanovou omáčkou, knedľou a brusnicami.", weight:"150 g / 4 ks", alg:[1,3,7,9,10], price:5.60},
+      {cat:"Menu B", name:"Pečené kuracie stehno, dusená kapusta, zemiaky", desc:"Kuracie stehno pečené do chrumkava, dusená červená kapusta a varené zemiaky.", weight:"200 g / 200 g", alg:[], price:4.90},
+      {cat:"Vegetariánske jedlá", name:"Bryndzové halušky bez slaniny", desc:"Zemiakové halušky s pravou bryndzou, posypané pažítkou.", weight:"350 g", alg:[1,3,7], price:4.70, veg:true},
+      {cat:"Vegánske jedlá", name:"Pečená zelenina s quinoou a tahini", desc:"Pečená tekvica, paprika a cuketa na quinoi, prelievané sezamovou tahini omáčkou.", weight:"320 g", alg:[11], price:4.80, veg:true, vegan:true},
+      {cat:"Prílohy a doplnky", name:"Miešaný zeleninový šalát", desc:"Listový šalát, paradajky, uhorka a paprika s olivovým olejom.", weight:"120 g", alg:[], price:1.00, veg:true, vegan:true}
+    ]
+  },
+  { // ŠTVRTOK
+    headline:"Svieži štvrtok",
+    description:"Gulášová polievka, morčacie soté so zeleninou, rybie filé v cestíčku a tofu z woku pre tých, ktorí nejedia mäso.",
+    meals:[
+      {cat:"Polievky", name:"Gulášová polievka", desc:"Hustá polievka z hovädzieho mäsa, zemiakov a papriky, s chlebom.", weight:"0,33 l", alg:[1], price:1.10},
+      {cat:"Menu A", name:"Morčacie soté so zeleninou, ryža", desc:"Prúžky morčacieho mäsa so zeleninou na sójovej omáčke a dusená ryža.", weight:"150 g / 200 g", alg:[6,9], price:5.20},
+      {cat:"Menu B", name:"Rybie filé v cestíčku, zemiaková kaša", desc:"Filé z tresky v pivnom cestíčku, maslová zemiaková kaša a citrón.", weight:"150 g / 250 g", alg:[1,3,4,7], price:5.30},
+      {cat:"Menu C", name:"Hovädzí burger s hranolkami", desc:"Hovädzí burger so syrom čedar, zeleninou a domácou omáčkou, k tomu hranolky.", weight:"180 g / 150 g", alg:[1,3,7,10,11], price:7.20},
+      {cat:"Vegánske jedlá", name:"Tofu so zeleninou z woku, rezance", desc:"Opečené tofu so zeleninou, sójovou omáčkou a sezamom na pšeničných rezancoch.", weight:"330 g", alg:[1,6,11], price:4.90, veg:true, vegan:true},
+      {cat:"Prílohy a doplnky", name:"Hranolky", desc:"Chrumkavé zemiakové hranolky s morskou soľou.", weight:"150 g", alg:[], price:1.30, veg:true, vegan:true}
+    ]
+  }
+];
+
+/* PIATOK – zásobník jedál, z každej kategórie sa vyberie jedno náhodne */
+const FRIDAY_POOL = {
+  "Menu A":[
+    {name:"Kurací rezeň s opekanými zemiakmi", desc:"Kurací rezeň v chrumkavej strúhanke, opekané zemiaky s rozmarínom a plátok citróna.", weight:"150 g / 200 g", alg:[1,3,7], price:5.10},
+    {name:"Grilované kuracie prsia, ryža s hráškom", desc:"Šťavnaté kuracie prsia marinované v cesnaku a tymiane, dusená ryža so zeleným hráškom.", weight:"150 g / 200 g", alg:[], price:4.90},
+    {name:"Pečené kuracie stehno s ryžou", desc:"Kuracie stehno pečené s bylinkami do chrumkava, dusená ryža.", weight:"200 g / 200 g", alg:[], price:4.90},
+    {name:"Kuracie kari s ryžou", desc:"Kuracie mäso v jemnej kari omáčke s jogurtom a koriandrom, jazmínová ryža.", weight:"150 g / 200 g", alg:[7], price:5.00},
+    {name:"Vyprážaný kurací rezeň, zemiakový šalát", desc:"Kurací rezeň so zemiakovým šalátom a plátkom citróna.", weight:"150 g / 200 g", alg:[1,3,7,10], price:5.10}
+  ],
+  "Menu B":[
+    {name:"Hovädzí guláš s knedľou", desc:"Hovädzie mäso dusené s cibuľou, paprikou a rascou, kysnutá knedľa.", weight:"150 g / 4 ks", alg:[1,3,7], price:5.40},
+    {name:"Sviečková na smotane, knedľa, brusnice", desc:"Hovädzie mäso na koreňovej zelenine so smotanovou omáčkou, knedľou a brusnicami.", weight:"150 g / 4 ks", alg:[1,3,7,9,10], price:5.60},
+    {name:"Bravčové karé, zemiakové pyré", desc:"Bravčové karé pečené s cesnakom a rascou, maslové zemiakové pyré.", weight:"150 g / 250 g", alg:[7], price:5.40},
+    {name:"Pečené kuracie stehno, dusená kapusta, zemiaky", desc:"Kuracie stehno pečené do chrumkava, dusená červená kapusta a varené zemiaky.", weight:"200 g / 200 g", alg:[], price:4.90},
+    {name:"Bravčový guláš, kysnutá knedľa", desc:"Pomaly dusený bravčový guláš so sladkou paprikou, domáca knedľa.", weight:"150 g / 4 ks", alg:[1,3,7], price:5.20}
+  ],
+  "Menu C":[
+    {name:"Pečený losos s ryžou a hráškom", desc:"Filet z lososa pečený s citrónom a kôprom, ryža so zeleným hráškom.", weight:"120 g / 200 g", alg:[4,7], price:6.80},
+    {name:"Rybie filé v cestíčku, zemiaková kaša", desc:"Filé z tresky v pivnom cestíčku, maslová zemiaková kaša a citrón.", weight:"150 g / 250 g", alg:[1,3,4,7], price:5.30},
+    {name:"Špagety bolonese so syrom", desc:"Špagety s omáčkou z hovädzieho mäsa, paradajok a bylín, posypané syrom.", weight:"350 g", alg:[1,7,9], price:4.80},
+    {name:"Penne s kuracím mäsom a sušenými paradajkami", desc:"Penne v smotanovej omáčke s kuracím mäsom, sušenými paradajkami a bazalkou.", weight:"350 g", alg:[1,7], price:5.10},
+    {name:"Pečený losos, opekané zemiaky", desc:"Filet z lososa s citrónovým maslom, opekané zemiaky a listový šalát.", weight:"120 g / 200 g", alg:[4,7], price:6.90}
+  ],
+  "Menu D":[
+    {name:"Hovädzí burger s hranolkami", desc:"Hovädzí burger so syrom a zeleninou v maslovej žemli, chrumkavé hranolky.", weight:"180 g / 150 g", alg:[1,3,7,10,11], price:7.20},
+    {name:"Morčacie soté so zeleninou, ryža", desc:"Prúžky morčacieho mäsa s paprikou a cuketou, dusená ryža.", weight:"150 g / 200 g", alg:[6,9], price:5.20},
+    {name:"Sladkokyslé kura s ryžou", desc:"Kúsky kuracieho mäsa v sladkokyslej omáčke s ananásom a paprikou, ryža.", weight:"150 g / 200 g", alg:[1,6], price:5.00},
+    {name:"Grilované kuracie prsia, zemiakové pyré", desc:"Kuracie prsia z grilu, krémové zemiakové pyré a zeleninová obloha.", weight:"150 g / 250 g", alg:[7], price:5.20},
+    {name:"Bravčová panenka, opekané zemiaky", desc:"Pečená bravčová panenka s bylinkami a opekané zemiaky.", weight:"150 g / 200 g", alg:[], price:6.20}
+  ],
+  "BZLMS":[
+    {name:"Grilované kuracie prsia so zeleninou a ryžou", desc:"Kuracie prsia na grile s pečenou zeleninou a ryžou. Bez lepku a bez mlieka.", weight:"150 g / 200 g", alg:[], price:5.30},
+    {name:"Pečený losos s opekanými zemiakmi", desc:"Losos pečený s citrónom, opekané zemiaky a listový šalát. Bez lepku a bez mlieka.", weight:"120 g / 200 g", alg:[4], price:6.90},
+    {name:"Morčacie prsia, ryža a dusená zelenina", desc:"Morčacie prsia na bylinkách, ryža a dusená zelenina. Bez lepku a bez mlieka.", weight:"150 g / 200 g", alg:[], price:5.30},
+    {name:"Pečené kuracie stehno, opekané zemiaky", desc:"Kuracie stehno pečené s rozmarínom a opekané zemiaky. Bez lepku a bez mlieka.", weight:"200 g / 200 g", alg:[], price:5.10},
+    {name:"Cícerové kari s jazmínovou ryžou", desc:"Cícer v kokosovej omáčke s rajčinami a zázvorom, jazmínová ryža. Bez lepku a bez mlieka.", weight:"300 g", alg:[], price:4.80, veg:true, vegan:true}
+  ],
+  "VEG":[
+    {name:"Zeleninové rizoto s parmezánom", desc:"Krémové rizoto s hráškom, cuketou a fazuľkami, dokončené parmezánom.", weight:"320 g", alg:[7,9], price:4.60, veg:true},
+    {name:"Zemiakové placky so zakysanou smotanou", desc:"Chrumkavé zemiakové placky s cesnakom a majoránom, zakysaná smotana.", weight:"3 ks", alg:[1,3,7], price:4.40, veg:true},
+    {name:"Bryndzové halušky bez slaniny", desc:"Zemiakové halušky s pravou bryndzou, posypané pažítkou.", weight:"350 g", alg:[1,3,7], price:4.70, veg:true},
+    {name:"Vyprážaný syr, varené zemiaky, tatárska omáčka", desc:"Eidam v zlatistom cestíčku, varené zemiaky a domáca tatárska omáčka.", weight:"120 g / 200 g", alg:[1,3,7,10], price:4.70, veg:true},
+    {name:"Šošovicové kari s ryžou", desc:"Červená šošovica s paradajkami, kurkumou a kokosovým mliekom, basmati ryža.", weight:"320 g", alg:[], price:4.50, veg:true, vegan:true}
+  ]
+};
+
+const ALLERGENS = {1:"Obilniny obsahujúce lepok",2:"Kôrovce",3:"Vajcia",4:"Ryby",5:"Arašidy",6:"Sójové zrná",7:"Mlieko",8:"Orechy",9:"Zeler",10:"Horčica",11:"Sezamové semená",12:"Oxid siričitý a siričitany",13:"Vlčí bôb",14:"Mäkkýše"};
+
+/* ===================================================================== */
+const TZ = "Europe/Bratislava";
+const DAY_NAMES = ["Pondelok","Utorok","Streda","Štvrtok","Piatok","Sobota","Nedeľa"];
+const MONTHS_GEN = ["januára","februára","marca","apríla","mája","júna","júla","augusta","septembra","októbra","novembra","decembra"];
+const KIND_COLOR = {soup:"#E0A030", main:"#2D6A4C", vegetarian:"#557F25", vegan:"#1F7F63", side:"#B5653A"};
+const CAT = new Map(CATEGORIES.map((c, i) => [c.name, {...c, order:i}]));
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = (n) => n == null ? "" : new Intl.NumberFormat("sk-SK", {style:"currency", currency:"EUR"}).format(n);
+const plural = (n, one, few, many) => n === 1 ? one : (n >= 2 && n <= 4 ? few : many);
+
+const ICON = {
+  leaf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19 13 11"/></svg>',
+  sprout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 21v-9"/><path d="M12 12C12 7 9 5 4 5c0 5 3 7 8 7Z"/><path d="M12 12c0-4 2.5-6 8-6 0 4-3 6-8 6Z"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="22" height="22" aria-hidden="true" style="flex:none;margin-top:3px"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+  ext:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M18 14v5H5V6h5"/></svg>'
+};
+const PH_ICON = {
+  soup:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M8 32h48a24 24 0 0 1-48 0Z"/><path d="M22 22c0-4 3-5 3-9M32 22c0-4 3-5 3-9M42 22c0-4 3-5 3-9"/></svg>',
+  main:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="32" cy="34" r="20"/><circle cx="32" cy="34" r="12"/></svg>',
+  vegetarian:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M14 50c0-22 12-34 38-36 0 24-12 36-36 36"/><path d="M14 50 36 28"/></svg>',
+  vegan:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M32 56V32"/><path d="M32 32C32 20 25 14 12 14c0 12 7 18 20 18Z"/><path d="M32 32c0-10 6-16 20-16 0 10-7 16-20 16Z"/></svg>',
+  side:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M10 30h44l-5 20H15Z"/><path d="M20 30c0-8 5-14 12-14s12 6 12 14"/></svg>'
+};
+
+/* ---------- dátumy v časovom pásme Europe/Bratislava ---------- */
+function nowBA(){
+  const parts = new Intl.DateTimeFormat("en-GB", {timeZone:TZ, year:"numeric", month:"2-digit", day:"2-digit"}).formatToParts(new Date());
+  const g = t => parts.find(p => p.type === t).value;
+  return `${g("year")}-${g("month")}-${g("day")}`;
+}
+const parseISO = s => { const [y,m,d] = s.split("-").map(Number); return new Date(Date.UTC(y, m-1, d)); };
+const toISO = d => d.toISOString().slice(0, 10);
+const addDays = (s, n) => { const d = parseISO(s); d.setUTCDate(d.getUTCDate() + n); return toISO(d); };
+const weekday = s => (parseISO(s).getUTCDay() + 6) % 7;
+const mondayOf = s => addDays(s, -weekday(s));
+function isoWeek(s){
+  const d = parseISO(s); d.setUTCDate(d.getUTCDate() - weekday(s) + 3);
+  const jan4 = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+  const w1 = new Date(jan4); w1.setUTCDate(jan4.getUTCDate() - ((jan4.getUTCDay() + 6) % 7) + 3);
+  return 1 + Math.round((d - w1) / 604800000);
+}
+const fmtDay = s => { const d = parseISO(s); return `${d.getUTCDate()}. ${MONTHS_GEN[d.getUTCMonth()]}`; };
+const fmtShort = s => { const d = parseISO(s); return `${d.getUTCDate()}. ${d.getUTCMonth()+1}.`; };
+
+/* ---------- menu pre konkrétny dátum ---------- */
+function menuFor(date){
+  const wd = weekday(date);
+  if (wd < 4) return WEEK_MENU[wd] ? WEEK_MENU[wd] : {meals:[]};
+  if (wd > 4) return {meals:[]};
+  const rnd = mulberry(hashStr("piatok-" + date));
+  const meals = Object.entries(FRIDAY_POOL).map(([cat, list]) => ({cat, ...list[Math.floor(rnd() * list.length)]}));
+  return {
+    headline:"Piatkový výber",
+    description:"Na výber: " + meals.map(m => m.name).join(", ") + ".",
+    meals
+  };
+}
+
+/* ---------- fotky (kreslia sa priamo v prehliadači) ---------- */
+const photoCache = new Map();
+const photoQueue = [];
+let photoBusy = false;
+const kindOf = (m) => (CAT.get(m.cat) || {}).kind || "main";
+function photoFor(m){
+  if (photoCache.has(m.name)) return photoCache.get(m.name);
+  let url = "";
+  try { url = drawDish({name:m.name, description:m.desc}, kindOf(m)); } catch (e) { console.warn(e); }
+  photoCache.set(m.name, url);
+  return url;
+}
+function fillPhotos(){
+  if (photoBusy) return; photoBusy = true;
+  const step = () => {
+    const img = document.querySelector("img[data-pending]");
+    if (!img){ photoBusy = false; return; }
+    const m = {name: img.dataset.name, desc: img.dataset.desc, cat: img.dataset.cat};
+    const url = photoFor(m);
+    document.querySelectorAll("img[data-pending]").forEach(i => {
+      if (i.dataset.name !== m.name) return;
+      if (url){ i.src = url; i.removeAttribute("data-pending"); } else imgFail(i);
+    });
+    setTimeout(step, 0);
+  };
+  step();
+}
+function imgHTML(m){
+  const cached = photoCache.get(m.name);
+  return `<img ${cached ? `src="${cached}"` : `src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-pending`} alt="${esc(m.name)}" data-name="${esc(m.name)}" data-desc="${esc(m.desc || "")}" data-cat="${esc(m.cat)}" data-kind="${kindOf(m)}" onerror="if(!this.hasAttribute('data-pending'))imgFail(this)">`;
+}
+window.imgFail = function(img){
+  const kind = img.dataset.kind || "main";
+  const div = document.createElement("div");
+  div.className = "ph";
+  div.style.background = `linear-gradient(135deg, color-mix(in srgb, ${KIND_COLOR[kind]} 18%, var(--surface-2)), var(--surface-2))`;
+  div.innerHTML = PH_ICON[kind] || PH_ICON.main;
+  img.replaceWith(div);
+};
+
+/* ---------- vykreslenie ---------- */
+const state = { weekStart: null, selected: null, dayMeals: [] };
+
+function render(){
+  const today = nowBA(), mon = state.weekStart, fri = addDays(mon, 4);
+  $("#weekTitle").textContent = `Týždeň ${isoWeek(mon)}`;
+  $("#weekRange").textContent = `${fmtShort(mon)} – ${fmtShort(fri)} ${parseISO(fri).getUTCFullYear()}`;
+  $("#btnThisWeek").hidden = mon === mondayOf(today);
+
+  let strip = "";
+  for (let i = 0; i < 5; i++){
+    const d = addDays(mon, i), dt = parseISO(d);
+    strip += `<button class="day-tab ${d < today ? "past" : ""}" data-act="day" data-date="${d}" aria-current="${d === state.selected}">
+      <span class="dn">${DAY_NAMES[i]}</span><span class="dd">${dt.getUTCDate()}</span><span class="dm">${MONTHS_GEN[dt.getUTCMonth()]}</span>
+      ${d === today ? '<span class="today-dot">dnes</span>' : ""}</button>`;
+  }
+  $("#dayStrip").innerHTML = strip;
+
+  const d = state.selected, menu = menuFor(d);
+  state.dayMeals = menu.meals;
+  let html = `<div class="day-head"><div><h2>${DAY_NAMES[weekday(d)]}</h2><p class="sub">${fmtDay(d)} ${parseISO(d).getUTCFullYear()}</p>${auth.user ? `<p class="greet">Dobrý deň, ${esc(auth.user.name.split(" ")[0])}. Čo si dnes dáte?</p>` : ""}</div>
+    ${menu.meals.length ? `<span class="deadline ${d < today ? "closed" : ""}">${ICON.clock}${d < today ? "Výdaj ukončený" : `Objednávky do ${ORDER_DEADLINE} v deň výdaja`}</span>` : ""}
+    ${menu.headline || menu.description ? `<div class="day-intro">${ICON.info}<div>${menu.headline ? `<strong>${esc(menu.headline)}</strong>` : ""}${menu.description ? `<p>${esc(menu.description)}</p>` : ""}</div></div>` : ""}
+  </div>`;
+  if (!menu.meals.length){
+    html += `<div class="empty"><h3>Na tento deň nie je jedálny lístok</h3><p>Vyberte si iný deň v týždni.</p></div>`;
+  } else {
+    html += `<div class="cats">`;
+    const groups = new Map();
+    menu.meals.forEach((m, i) => { if (!groups.has(m.cat)) groups.set(m.cat, []); groups.get(m.cat).push({...m, i}); });
+    [...groups.keys()].sort((a, b) => ((CAT.get(a)||{order:99}).order) - ((CAT.get(b)||{order:99}).order)).forEach(cat => {
+      const list = groups.get(cat), kind = (CAT.get(cat) || {}).kind || "main";
+      html += `<section class="cat ${list.length > 1 ? "wide" : ""}" aria-label="${esc(cat)}"><div class="cat-head"><span class="cat-swatch" style="background:${KIND_COLOR[kind]}"></span><h3>${esc(cat)}</h3><span class="n">${list.length} ${plural(list.length,"jedlo","jedlá","jedál")}</span></div><div class="grid">${list.map(m => card(m, d < today)).join("")}</div></section>`;
+    });
+    html += `</div>`;
+  }
+  html += `<section class="edupage" aria-label="Objednávanie cez EduPage"><div><h3>Objednajte si obed</h3><p>Obed si objednáte aj odhlásite vo svojom účte EduPage.</p></div>
+    <a class="btn btn-edu" data-act="order" href="${esc(EDUPAGE_URL)}" target="_blank" rel="noopener noreferrer">Objednať cez EduPage ${ICON.ext}</a></section>`;
+  $("#dayView").innerHTML = html;
+  fillPhotos();
+}
+
+function card(m, past){
+  const tag = m.vegan ? `<span class="tag vegan">${ICON.sprout}Vegánske</span>` : m.veg ? `<span class="tag veg">${ICON.leaf}Vegetariánske</span>` : "";
+  return `<article class="meal ${past ? "is-off" : ""}">
+    <button class="photo-btn" data-act="detail" data-i="${m.i}" aria-label="Zobraziť detail: ${esc(m.name)}">${imgHTML(m)}<span class="photo-tags">${tag}</span></button>
+    <div class="meal-body">
+      <h4>${esc(m.name)}</h4>
+      ${m.desc ? `<p class="meal-desc">${esc(m.desc)}</p>` : ""}
+      <div class="facts">${m.weight ? `<span>Porcia <b>${esc(m.weight)}</b></span>` : ""}<span>Alergény ${algChips(m.alg)}</span></div>
+      <div class="meal-foot">
+        <div class="foot-left"><span class="price">${money(m.price)}</span><span class="avail ${past ? "closed" : "ok"}">${past ? "Výdaj ukončený" : "Dostupné"}</span></div>
+        <a class="btn btn-sm" data-act="order" href="${esc(EDUPAGE_URL)}" target="_blank" rel="noopener noreferrer">Objednať</a>
+      </div>
+    </div></article>`;
+}
+function algChips(list){
+  if (!list || !list.length) return `<b>bez alergénov</b>`;
+  return `<span class="alg">${list.map(n => `<span title="${esc(ALLERGENS[n])}">${n}</span>`).join("")}</span>`;
+}
+
+function showDetail(i){
+  const m = state.dayMeals[i]; if (!m) return;
+  const d = $("#dlg-detail");
+  d.innerHTML = `<div class="detail">
+    <div class="detail-photo">${imgHTML(m)}</div>
+    <div class="detail-info">
+      <button class="icon-btn close-float" data-close aria-label="Zavrieť">${ICON.close}</button>
+      <div class="muted">${esc(m.cat)} · ${DAY_NAMES[weekday(state.selected)]} ${fmtDay(state.selected)}</div>
+      <h2>${esc(m.name)}</h2>
+      ${m.desc ? `<p>${esc(m.desc)}</p>` : ""}
+      <div class="facts">${m.weight ? `<span>Porcia <b>${esc(m.weight)}</b></span>` : ""}${m.vegan ? `<span class="tag vegan">${ICON.sprout}Vegánske</span>` : m.veg ? `<span class="tag veg">${ICON.leaf}Vegetariánske</span>` : ""}</div>
+      <div><div style="font-weight:600;margin-bottom:6px">Alergény</div>
+        ${m.alg && m.alg.length ? `<ul class="alg-list">${m.alg.map(n => `<li><span class="alg"><span>${n}</span></span>${esc(ALLERGENS[n])}</li>`).join("")}</ul>` : `<p class="muted">Jedlo neobsahuje žiadne z hlavných alergénov.</p>`}
+      </div>
+      <div class="meal-foot"><span class="price">${money(m.price)}</span><a class="btn" data-act="order" href="${esc(EDUPAGE_URL)}" target="_blank" rel="noopener noreferrer">Objednať cez EduPage</a></div>
+    </div></div>`;
+  d.showModal(); fillPhotos();
+}
+function showAllergens(){
+  const d = $("#dlg-info");
+  d.innerHTML = `<div class="dlg-head"><h2>Zoznam alergénov</h2><button class="icon-btn" data-close aria-label="Zavrieť">${ICON.close}</button></div>
+  <div class="dlg-body"><ul class="alg-list">${Object.entries(ALLERGENS).map(([n, name]) => `<li><span class="alg"><span>${n}</span></span>${esc(name)}</li>`).join("")}</ul></div>`;
+  d.showModal();
+}
+
+/* ---------- prihlásenie (iba ukážkové) ----------
+   Nič sa nikam neodosiela ani neoveruje. Meno sa uloží len
+   v tomto prehliadači, aby ste zostali prihlásený aj po obnovení. */
+const AUTH_KEY = "jedalen.demoUser";
+const auth = {
+  user: (() => { try { return JSON.parse(localStorage.getItem(AUTH_KEY)); } catch { return null; } })(),
+  pendingOrder: false
+};
+function saveUser(u){ auth.user = u; try { u ? localStorage.setItem(AUTH_KEY, JSON.stringify(u)) : localStorage.removeItem(AUTH_KEY); } catch {} }
+function initials(name){ return name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("") || "?"; }
+function renderAuth(){
+  const box = $("#authBox");
+  if (auth.user){
+    box.innerHTML = `<div class="user-chip"><span class="avatar" aria-hidden="true">${esc(initials(auth.user.name))}</span>
+      <span class="user-name">${esc(auth.user.name)}<small>${esc(auth.user.email)}</small></span>
+      <button class="btn btn-soft btn-sm" data-act="logout">Odhlásiť</button></div>`;
+  } else {
+    box.innerHTML = `<button class="btn btn-sm" data-act="login">Prihlásiť sa</button>`;
+  }
+}
+function toast(msg){
+  const el = document.createElement("div"); el.className = "toast"; el.textContent = msg;
+  $("#toasts").appendChild(el); setTimeout(() => el.remove(), 3200);
+}
+function showLogin(forOrder = false){
+  auth.pendingOrder = forOrder;
+  const d = $("#dlg-login");
+  d.innerHTML = `<div class="dlg-head"><h2>Prihlásenie</h2><button class="icon-btn" data-close aria-label="Zavrieť">${ICON.close}</button></div>
+  <form class="dlg-body" id="loginForm" novalidate>
+    ${forOrder ? `<p class="muted" style="margin-bottom:14px">Pred objednaním obeda sa prihláste.</p>` : ""}
+    <div class="field"><label for="lgName">Meno a priezvisko</label><input class="input" id="lgName" autocomplete="name" required placeholder="Ján Novák"></div>
+    <div class="field"><label for="lgEmail">E-mail</label><input class="input" id="lgEmail" type="email" autocomplete="email" required placeholder="jan.novak@skola.sk"></div>
+    <div class="field"><label for="lgPass">Heslo</label><input class="input" id="lgPass" type="password" autocomplete="current-password" required minlength="4"></div>
+    <p class="login-note" id="lgErr" role="alert" style="color:var(--tomato)"></p>
+    <div class="dlg-actions"><button type="button" class="btn btn-soft" data-close>Zrušiť</button><button class="btn">Prihlásiť sa</button></div>
+    <p class="login-note">Ukážkové prihlásenie: funguje akékoľvek meno, e-mail a heslo (aspoň 4 znaky). Údaje sa nikam neodosielajú.</p>
+  </form>`;
+  $("#loginForm").onsubmit = (e) => {
+    e.preventDefault();
+    const name = $("#lgName").value.trim(), email = $("#lgEmail").value.trim(), pass = $("#lgPass").value;
+    let err = "";
+    if (name.length < 2) err = "Zadajte svoje meno.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) err = "Zadajte platný e-mail.";
+    else if (pass.length < 4) err = "Heslo musí mať aspoň 4 znaky.";
+    if (err){ $("#lgErr").textContent = err; return; }
+    saveUser({name, email});
+    d.close();
+    renderAuth(); render();
+    toast(`Prihlásený ako ${name}`);
+    if (auth.pendingOrder) window.open(EDUPAGE_URL, "_blank", "noopener");
+  };
+  d.showModal();
+  setTimeout(() => $("#lgName").focus(), 50);
+}
+
+/* ---------- udalosti ---------- */
+function defaultDay(){ const t = nowBA(); return weekday(t) > 4 ? addDays(mondayOf(t), 7) : t; }
+document.addEventListener("click", (e) => {
+  const close = e.target.closest("[data-close]");
+  if (close){ close.closest("dialog").close(); return; }
+  if (e.target.tagName === "DIALOG"){
+    const b = e.target.getBoundingClientRect();
+    if (e.clientX < b.left || e.clientX > b.right || e.clientY < b.top || e.clientY > b.bottom) e.target.close();
+    return;
+  }
+  const el = e.target.closest("[data-act]"); if (!el) return;
+  const act = el.dataset.act;
+  if (act === "order"){ if (!auth.user){ e.preventDefault(); showLogin(true); } return; }
+  if (act === "login"){ showLogin(false); return; }
+  if (act === "logout"){ saveUser(null); renderAuth(); render(); toast("Boli ste odhlásený."); return; }
+  if (act === "week"){ state.weekStart = addDays(state.weekStart, 7 * Number(el.dataset.dir)); state.selected = state.weekStart; render(); }
+  if (act === "week-today"){ state.selected = defaultDay(); state.weekStart = mondayOf(state.selected); render(); }
+  if (act === "day"){ state.selected = el.dataset.date; render(); }
+  if (act === "detail") showDetail(Number(el.dataset.i));
+  if (act === "allergens") showAllergens();
+});
+$("#brandLink").addEventListener("click", (e) => { e.preventDefault(); state.selected = defaultDay(); state.weekStart = mondayOf(state.selected); render(); });
+
+/* =====================================================================
+   KRESLENIE ILUSTRAČNÝCH FOTIEK JEDÁL
+   ===================================================================== */
+function hashStr(s){ let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function mulberry(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+function dishProfile(text, kind){
+  const t = text.toLowerCase(); const has = (...w) => w.some(x => t.includes(x));
+  if (kind === "soup" || has("polievk", "vývar", "minestrone", "krém s")){
+    let c = "#E3B458";
+    if (has("paradaj")) c = "#C9452E"; else if (has("brokol", "hrášk", "špenát")) c = "#86AA45"; else if (has("guláš", "fazu")) c = "#8E4424";
+    else if (has("šošov")) c = "#B8652C"; else if (has("tekvic", "mrkv")) c = "#E2852B"; else if (has("minestrone")) c = "#C76A3C"; else if (has("vývar")) c = "#E1AE48";
+    return {type:"soup", color:c, noodles: has("rezanc", "minestrone"), cream: has("krém", "smotan", "paradaj", "hrášk", "tekvic"), chunks: has("guláš", "fazu", "minestrone"), croutons: has("krutón"), seeds: has("semien")};
+  }
+  if (has("štrúd", "koláč")) return {type:"strudel"};
+  if (has("palacin")) return {type:"crepe"};
+  if (has("ovocn")) return {type:"fruit"};
+  if (has("hranolk") && kind === "side") return {type:"bowl", fill:"fries"};
+  if (has("šalát") && kind === "side") return {type:"bowl", fill: has("uhork") ? "cucumber" : "salad"};
+  const p = {type:"plate"};
+  if (has("halušk")) p.one = "halusky";
+  else if (has("rizot")) p.one = "risotto";
+  else if (has("špaget", "bolon")) p.one = "spaghetti";
+  else if (has("penne", "cestovin")) p.one = "penne";
+  else if (has("plack")) p.one = "pancakes";
+  else if (has("burger")) p.protein = "burger";
+  if (!p.one){
+    if (p.protein) { /* burger */ }
+    else if (has("rezeň", "vyprážan", "v cestíčku")) p.protein = has("syr") ? "cheese" : has("ryb", "tresk") ? "fishfried" : "schnitzel";
+    else if (has("losos", "ryb")) p.protein = "salmon";
+    else if (has("tofu")) p.protein = "tofu";
+    else if (has("cícer", "šošov", "zeleninové kari")) p.protein = "curryveg";
+    else if (has("kari", "sladkokys", "soté")) p.protein = "curry";
+    else if (has("guláš")) p.protein = "goulash";
+    else if (has("sviečk")) p.protein = "svieckova";
+    else if (has("stehno")) p.protein = "leg";
+    else if (has("karé", "bravč", "hovädz")) p.protein = "roast";
+    else if (has("kurac", "morč", "kura")) p.protein = "chicken";
+    else if (has("pečená zelenina", "quino")) p.protein = "roastveg";
+    if (has("ryž")) p.side = "rice"; else if (has("knedľ")) p.side = "dumplings"; else if (has("hranolk")) p.side = "fries";
+    else if (has("pyré", "kaša")) p.side = "mash"; else if (has("zemiakový šalát")) p.side = "potsalad"; else if (has("zemiak")) p.side = "potatoes";
+    else if (has("quino")) p.side = "quinoa"; else if (has("rezanc")) p.side = "noodles";
+    if (has("kapust")) p.extra = "cabbage"; else if (has("hrášk")) p.extra = "peas"; else if (has("brusnic")) p.extra = "cranberry"; else if (has("šalát", "zelenin")) p.extra = "greens";
+    if (has("citrón")) p.lemon = true;
+  }
+  return p;
+}
+
+function drawDish(meal, kind){
+  const W = 1200, H = 900;
+  const c = document.createElement("canvas"); c.width = 800; c.height = 600;
+  const x = c.getContext("2d"); x.scale(800 / W, 600 / H);
+  const r = mulberry(hashStr(meal.name));
+  const R = (a, b) => a + r() * (b - a);
+  const prof = dishProfile(`${meal.name} ${meal.description || ""}`, kind);
+
+  // tabletop
+  const tables = [["#7B5A3B","#5A3F28","wood"],["#3F4B46","#2B3531","stone"],["#CDBB9E","#B19D7F","linen"],["#8C6A4A","#6B4E35","wood"]];
+  const [t1, t2, tt] = tables[Math.floor(r() * tables.length)];
+  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, t1); g.addColorStop(1, t2);
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  if (tt === "wood"){ x.globalAlpha = .12; for (let i = 0; i < 60; i++){ x.strokeStyle = r() > .5 ? "#000" : "#fff"; x.lineWidth = R(1, 4); x.beginPath(); const y = R(0, H); x.moveTo(0, y); x.bezierCurveTo(W*.3, y + R(-30,30), W*.7, y + R(-30,30), W, y + R(-20,20)); x.stroke(); } x.globalAlpha = 1; }
+  else { x.globalAlpha = .07; for (let i = 0; i < 2500; i++){ x.fillStyle = r() > .5 ? "#000" : "#fff"; x.fillRect(R(0,W), R(0,H), 2, 2); } x.globalAlpha = 1; }
+  // light vignette
+  const v = x.createRadialGradient(W*.45, H*.4, 100, W/2, H/2, W*.75); v.addColorStop(0, "rgba(255,255,255,.12)"); v.addColorStop(1, "rgba(0,0,0,.35)");
+  x.fillStyle = v; x.fillRect(0, 0, W, H);
+  // napkin
+  x.save(); x.translate(W*.86, H*.78); x.rotate(R(-.5, -.2)); x.shadowColor = "rgba(0,0,0,.25)"; x.shadowBlur = 20;
+  x.fillStyle = ["#DDE7D6","#F0E3C8","#E7D3CF","#D6E0E8"][Math.floor(r()*4)]; x.fillRect(-170, -120, 340, 240);
+  x.shadowBlur = 0; x.strokeStyle = "rgba(0,0,0,.08)"; x.lineWidth = 3; for (let i = -150; i < 170; i += 28){ x.beginPath(); x.moveTo(i, -120); x.lineTo(i, 120); x.stroke(); }
+  x.restore();
+
+  const cx = W*.47, cy = H*.5;
+  const blob = (bx, by, rx, ry, rot, fill, j = .12, n = 14) => {
+    const pts = []; for (let i = 0; i < n; i++){ const a = i / n * Math.PI * 2; const k = 1 + (r() - .5) * 2 * j; pts.push([Math.cos(a)*rx*k, Math.sin(a)*ry*k]); }
+    x.save(); x.translate(bx, by); x.rotate(rot); x.beginPath();
+    x.moveTo((pts[0][0]+pts[1][0])/2, (pts[0][1]+pts[1][1])/2);
+    for (let i = 1; i <= n; i++){ const p = pts[i % n], q = pts[(i+1) % n]; x.quadraticCurveTo(p[0], p[1], (p[0]+q[0])/2, (p[1]+q[1])/2); }
+    x.closePath(); x.restore();
+    x.fillStyle = fill; x.fill();
+  };
+  const shade = (bx, by, rad, c1, c2) => { const gr = x.createRadialGradient(bx - rad*.3, by - rad*.35, rad*.1, bx, by, rad*1.1); gr.addColorStop(0, c1); gr.addColorStop(1, c2); return gr; };
+  const leaf = (lx, ly, s, col = "#4E8A2E") => { x.save(); x.translate(lx, ly); x.rotate(R(0, 6.28)); x.fillStyle = col; x.beginPath(); x.ellipse(0, 0, s, s*.45, 0, 0, 6.28); x.fill(); x.strokeStyle = "rgba(255,255,255,.35)"; x.lineWidth = 1.5; x.beginPath(); x.moveTo(-s*.8, 0); x.lineTo(s*.8, 0); x.stroke(); x.restore(); };
+  const herbs = (hx, hy, spread, n = 10) => { for (let i = 0; i < n; i++) leaf(hx + R(-spread, spread), hy + R(-spread, spread), R(7, 13), r() > .5 ? "#4E8A2E" : "#6BA33A"); };
+
+  const plate = (pr, deep = false) => {
+    x.save(); x.shadowColor = "rgba(0,0,0,.45)"; x.shadowBlur = 50; x.shadowOffsetY = 22;
+    x.fillStyle = "#F4F2EC"; x.beginPath(); x.arc(cx, cy, pr, 0, 6.28); x.fill(); x.restore();
+    const rim = x.createRadialGradient(cx - pr*.3, cy - pr*.3, pr*.2, cx, cy, pr); rim.addColorStop(0, "#FFFFFF"); rim.addColorStop(1, "#DCD8CF");
+    x.fillStyle = rim; x.beginPath(); x.arc(cx, cy, pr, 0, 6.28); x.fill();
+    const inner = x.createRadialGradient(cx, cy - pr*.2, pr*.1, cx, cy, pr*(deep ? .8 : .74)); inner.addColorStop(0, "#FBFAF7"); inner.addColorStop(1, deep ? "#D8D3C8" : "#E9E5DD");
+    x.fillStyle = inner; x.beginPath(); x.arc(cx, cy, pr*(deep ? .8 : .74), 0, 6.28); x.fill();
+  };
+  const cutlery = () => {
+    x.save(); x.fillStyle = "#C9CDD1"; x.shadowColor = "rgba(0,0,0,.35)"; x.shadowBlur = 12; x.shadowOffsetY = 6;
+    const fx = cx - 400; x.fillRect(fx - 6, cy - 220, 12, 440); for (let i = -2; i <= 1; i++) x.fillRect(fx + i*12 - 2, cy - 300, 6, 90); x.fillRect(fx - 24, cy - 222, 48, 16);
+    const kx = cx + 400; x.beginPath(); x.moveTo(kx - 8, cy + 230); x.lineTo(kx - 8, cy - 300); x.quadraticCurveTo(kx + 26, cy - 250, kx + 12, cy - 40); x.lineTo(kx + 8, cy + 230); x.closePath(); x.fill();
+    x.restore();
+  };
+
+  if (prof.type === "soup"){
+    plate(310); // saucer
+    // bowl
+    x.save(); x.shadowColor = "rgba(0,0,0,.35)"; x.shadowBlur = 30; x.shadowOffsetY = 12;
+    x.fillStyle = "#EFEBE3"; x.beginPath(); x.arc(cx, cy, 245, 0, 6.28); x.fill(); x.restore();
+    const lip = x.createRadialGradient(cx - 80, cy - 90, 20, cx, cy, 245); lip.addColorStop(0, "#FFFFFF"); lip.addColorStop(1, "#CFC9BE");
+    x.fillStyle = lip; x.beginPath(); x.arc(cx, cy, 245, 0, 6.28); x.fill();
+    const sg = x.createRadialGradient(cx - 50, cy - 60, 20, cx, cy, 205); sg.addColorStop(0, prof.color); sg.addColorStop(1, shadeHex(prof.color, -0.28));
+    x.fillStyle = sg; x.beginPath(); x.arc(cx, cy, 205, 0, 6.28); x.fill();
+    if (prof.chunks){ for (let i = 0; i < 26; i++){ const a = R(0, 6.28), d = R(0, 160); blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(10, 20), R(8, 15), R(0, 3), ["#7A3A1E","#E9C46A","#D8763A","#F1E3B5"][Math.floor(r()*4)], .25, 8); } }
+    if (prof.noodles){ x.strokeStyle = "#F6E2A6"; x.lineWidth = 6; x.lineCap = "round"; for (let i = 0; i < 22; i++){ const a = R(0, 6.28), d = R(0, 150); const px = cx + Math.cos(a)*d, py = cy + Math.sin(a)*d; x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + R(-40,40), py + R(-40,40), px + R(-50,50), py + R(-50,50)); x.stroke(); } for (let i = 0; i < 14; i++){ const a = R(0, 6.28), d = R(0, 150); x.fillStyle = "#E8742A"; x.beginPath(); x.arc(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(7, 11), 0, 6.28); x.fill(); } }
+    if (prof.cream){ x.strokeStyle = "rgba(255,250,240,.9)"; x.lineWidth = 9; x.lineCap = "round"; x.beginPath(); for (let a = 0; a < 12; a += .2){ const rr = 8 + a * 7; const px = cx + 20 + Math.cos(a)*rr, py = cy - 10 + Math.sin(a)*rr; a === 0 ? x.moveTo(px, py) : x.lineTo(px, py); } x.stroke(); }
+    if (prof.croutons){ for (let i = 0; i < 9; i++){ x.save(); x.translate(cx + R(-110, 110), cy + R(-110, 110)); x.rotate(R(0, 3)); x.fillStyle = "#D9A456"; x.fillRect(-14, -14, 28, 28); x.fillStyle = "rgba(120,70,20,.35)"; x.fillRect(-14, 6, 28, 8); x.restore(); } }
+    if (prof.seeds){ for (let i = 0; i < 14; i++){ x.save(); x.translate(cx + R(-90, 90), cy + R(-90, 90)); x.rotate(R(0, 3)); x.fillStyle = "#4C6B2C"; x.beginPath(); x.ellipse(0, 0, 9, 5, 0, 0, 6.28); x.fill(); x.restore(); } }
+    herbs(cx + 30, cy - 20, 60, 12);
+    // spoon
+    x.save(); x.shadowColor = "rgba(0,0,0,.35)"; x.shadowBlur = 14; x.shadowOffsetY = 6; x.fillStyle = "#C9CDD1";
+    x.translate(cx + 330, cy + 40); x.rotate(.25); x.beginPath(); x.ellipse(0, -170, 40, 60, 0, 0, 6.28); x.fill(); x.fillRect(-8, -120, 16, 330); x.restore();
+  } else if (prof.type === "bowl"){
+    x.save(); x.shadowColor = "rgba(0,0,0,.4)"; x.shadowBlur = 40; x.shadowOffsetY = 18; x.fillStyle = "#E9E4DA"; x.beginPath(); x.arc(cx, cy, 260, 0, 6.28); x.fill(); x.restore();
+    const bg = x.createRadialGradient(cx - 80, cy - 80, 30, cx, cy, 260); bg.addColorStop(0, "#FFFFFF"); bg.addColorStop(1, "#CFC8BB"); x.fillStyle = bg; x.beginPath(); x.arc(cx, cy, 260, 0, 6.28); x.fill();
+    if (prof.fill === "fries"){ for (let i = 0; i < 70; i++){ x.save(); x.translate(cx + R(-150, 150), cy + R(-150, 150)); x.rotate(R(0, 3.14)); x.fillStyle = r() > .3 ? "#F2C14E" : "#DFA43A"; x.fillRect(-60, -9, 120, 18); x.fillStyle = "rgba(255,255,255,.25)"; x.fillRect(-60, -9, 120, 5); x.restore(); } for (let i = 0; i < 40; i++){ x.fillStyle = "#fff"; x.fillRect(cx + R(-150,150), cy + R(-150,150), 3, 3); } }
+    else if (prof.fill === "cucumber"){ for (let i = 0; i < 34; i++){ const px = cx + R(-160, 160), py = cy + R(-160, 160); if (Math.hypot(px-cx, py-cy) > 175) continue; x.fillStyle = "#3E7A2C"; x.beginPath(); x.arc(px, py, 38, 0, 6.28); x.fill(); x.fillStyle = "#D6EBA8"; x.beginPath(); x.arc(px, py, 33, 0, 6.28); x.fill(); x.fillStyle = "#B9D98A"; for (let k = 0; k < 6; k++){ x.beginPath(); x.ellipse(px + Math.cos(k)*14, py + Math.sin(k)*14, 3, 5, k, 0, 6.28); x.fill(); } } herbs(cx, cy, 120, 22); }
+    else { for (let i = 0; i < 40; i++){ const a = R(0, 6.28), d = R(0, 170); blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(30, 55), R(20, 35), R(0, 3), ["#5E9C35","#7DB443","#3F7A2A","#9CC95A"][Math.floor(r()*4)], .3, 10); } for (let i = 0; i < 9; i++){ const a = R(0,6.28), d = R(0,140); blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, 26, 26, 0, "#D63F2E", .1, 10); } for (let i = 0; i < 8; i++){ const a = R(0,6.28), d = R(0,140); blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, 30, 12, R(0,3), "#F2C14E", .15, 10); } }
+  } else if (prof.type === "strudel" || prof.type === "crepe" || prof.type === "fruit"){
+    plate(300);
+    if (prof.type === "strudel"){
+      x.save(); x.translate(cx, cy); x.rotate(-.25);
+      x.fillStyle = "#C88B3E"; x.beginPath(); x.roundRect(-190, -80, 380, 160, 70); x.fill();
+      x.fillStyle = "#E2B36A"; x.beginPath(); x.roundRect(-190, -80, 380, 110, 60); x.fill();
+      x.fillStyle = "#F6E7C2"; x.beginPath(); x.ellipse(-190, 0, 40, 80, 0, 0, 6.28); x.fill();
+      x.fillStyle = "#D6A14C"; for (let i = 0; i < 18; i++){ x.beginPath(); x.arc(-190 + R(-25, 25), R(-55, 55), R(5, 9), 0, 6.28); x.fill(); }
+      x.restore();
+      for (let i = 0; i < 400; i++){ x.fillStyle = "rgba(255,255,255,.85)"; x.fillRect(cx + R(-200, 200), cy + R(-120, 80), 2, 2); }
+    } else if (prof.type === "crepe"){
+      x.save(); x.translate(cx, cy); x.rotate(.3); x.fillStyle = "#E9C27F"; x.beginPath(); x.roundRect(-200, -70, 400, 140, 60); x.fill();
+      x.fillStyle = "rgba(160,100,40,.3)"; for (let i = 0; i < 30; i++){ x.beginPath(); x.arc(R(-180, 180), R(-50, 50), R(4, 12), 0, 6.28); x.fill(); }
+      x.fillStyle = "#E8902D"; x.beginPath(); x.ellipse(-200, 0, 26, 64, 0, 0, 6.28); x.fill(); x.restore();
+      x.fillStyle = "#E8902D"; blob(cx + 140, cy + 140, 50, 30, .2, "#E8902D", .2, 12);
+    } else {
+      for (let i = 0; i < 28; i++){ const a = R(0, 6.28), d = R(0, 170); const cols = ["#E24A3B","#F2C14E","#7DB443","#8B4BA8","#F28C38"]; blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(26, 40), R(22, 34), R(0, 3), cols[Math.floor(r()*cols.length)], .2, 10); }
+      herbs(cx, cy, 120, 10);
+    }
+    cutlery();
+  } else {
+    plate(320);
+    cutlery();
+    const P = prof;
+    const px = P.one ? cx : cx - 70, py = P.one ? cy : cy - 30;
+    // sauce pools
+    if (["goulash","svieckova","curry","curryveg"].includes(P.protein)){
+      const sc = {goulash:"#8A3A1C", svieckova:"#E3A96A", curry:"#E0962F", curryveg:"#E39A3A"}[P.protein];
+      blob(px, py + 20, 170, 140, R(0, 3), shade(px, py, 170, shadeHex(sc, .15), shadeHex(sc, -.2)), .1, 16);
+    }
+    switch (P.protein){
+      case "chicken": for (let i = 0; i < 2; i++){ const bx = px - 40 + i*80, by = py - 10 + i*30; blob(bx, by, 110, 62, -.4 + i*.3, shade(bx, by, 110, "#E9B76B", "#B87633"), .08, 16); x.strokeStyle = "rgba(90,45,15,.55)"; x.lineWidth = 9; for (let k = -2; k <= 2; k++){ x.beginPath(); x.moveTo(bx - 70 + k*28, by - 40); x.lineTo(bx - 20 + k*28, by + 45); x.stroke(); } } break;
+      case "schnitzel": case "cheese": case "fishfried": { const col = P.protein === "cheese" ? ["#EEC062","#C78A2C"] : ["#E2A445","#B5731F"]; blob(px, py, 150, 100, -.3, shade(px, py, 150, col[0], col[1]), .14, 18); for (let i = 0; i < 160; i++){ x.fillStyle = r() > .5 ? "rgba(120,70,15,.5)" : "rgba(255,230,160,.6)"; x.fillRect(px + R(-120, 120), py + R(-75, 75), 4, 4); } if (P.protein === "cheese") { x.fillStyle = "#F6E5A8"; blob(px + 100, py + 30, 30, 18, .4, "#F6E5A8", .2, 10); } break; }
+      case "salmon": { blob(px, py, 140, 85, -.25, shade(px, py, 140, "#F7A177", "#D9663C"), .08, 16); x.strokeStyle = "rgba(255,235,220,.8)"; x.lineWidth = 6; for (let k = -3; k <= 3; k++){ x.beginPath(); x.moveTo(px + k*34 - 15, py - 70); x.quadraticCurveTo(px + k*34 + 15, py, px + k*34 - 5, py + 72); x.stroke(); } herbs(px, py - 20, 40, 6); break; }
+      case "burger": { x.fillStyle = "rgba(0,0,0,.2)"; x.beginPath(); x.arc(px + 10, py + 14, 150, 0, 6.28); x.fill(); x.fillStyle = "#6FA83C"; blob(px, py, 160, 160, 0, "#6FA83C", .15, 18); x.fillStyle = shade(px, py, 145, "#E2A356", "#B06E2A"); x.beginPath(); x.arc(px, py, 145, 0, 6.28); x.fill(); for (let i = 0; i < 40; i++){ x.save(); x.translate(px + R(-100, 100), py + R(-100, 100)); x.rotate(R(0, 3)); x.fillStyle = "#FFF3D6"; x.beginPath(); x.ellipse(0, 0, 6, 3, 0, 0, 6.28); x.fill(); x.restore(); } break; }
+      case "tofu": for (let i = 0; i < 9; i++){ x.save(); x.translate(px + R(-110, 110), py + R(-90, 90)); x.rotate(R(0, 3)); x.fillStyle = "#E8D29A"; x.fillRect(-28, -28, 56, 56); x.fillStyle = "#C69A4A"; x.fillRect(-28, 14, 56, 14); x.restore(); } for (let i = 0; i < 14; i++) blob(px + R(-120, 120), py + R(-100, 100), R(18, 30), R(10, 16), R(0, 3), ["#E2463A","#78B043","#F2B64A"][Math.floor(r()*3)], .2, 10); break;
+      case "curry": for (let i = 0; i < 16; i++) blob(px + R(-110, 110), py + R(-80, 100), R(22, 34), R(18, 26), R(0, 3), shade(px, py, 40, "#F2C482", "#C98C42"), .25, 10); herbs(px, py, 90, 10); break;
+      case "curryveg": for (let i = 0; i < 46; i++){ x.fillStyle = shade(px, py, 30, "#F3D59A", "#D3A35A"); x.beginPath(); x.arc(px + R(-120, 120), py + R(-90, 110), R(10, 15), 0, 6.28); x.fill(); } herbs(px, py, 100, 12); break;
+      case "goulash": for (let i = 0; i < 12; i++) blob(px + R(-100, 100), py + R(-70, 100), R(26, 38), R(22, 30), R(0, 3), shade(px, py, 40, "#8E4A2A", "#5A2A14"), .25, 10); for (let i = 0; i < 8; i++) blob(px + R(-100, 100), py + R(-70, 100), 18, 8, R(0,3), "#D3452E", .2, 8); break;
+      case "svieckova": for (let i = 0; i < 3; i++) blob(px - 40 + i*45, py - 10 + i*12, 70, 100, .25, shade(px, py, 90, "#9C6A4E", "#6C4330"), .06, 14); break;
+      case "leg": blob(px, py, 130, 100, .3, shade(px, py, 130, "#D79A4D", "#8C4E1E"), .1, 16); x.fillStyle = "#F1E5CF"; x.beginPath(); x.roundRect(px + 90, py - 110, 26, 90, 12); x.fill(); break;
+      case "roast": for (let i = 0; i < 3; i++){ const bx = px - 60 + i*55, by = py - 10 + i*10; blob(bx, by, 80, 110, .35, shade(bx, by, 100, "#C99572", "#8E5A3B"), .06, 14); x.strokeStyle = "#6B3A20"; x.lineWidth = 8; x.beginPath(); x.ellipse(bx, by, 78, 108, .35, 0, 6.28); x.stroke(); } break;
+      case "roastveg": for (let i = 0; i < 22; i++) blob(px + R(-130, 130), py + R(-110, 110), R(26, 44), R(20, 32), R(0, 3), ["#E5862F","#D8402E","#F0C14B","#6C9E3A","#7A3C7E"][Math.floor(r()*5)], .25, 10); break;
+    }
+    // one-pot dishes
+    if (P.one === "halusky"){ for (let i = 0; i < 140; i++){ const a = R(0, 6.28), d = Math.sqrt(r()) * 190; blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(14, 22), R(9, 14), R(0, 3), shade(cx, cy, 200, "#F2EBD6", "#D9CDA9"), .3, 8); } for (let i = 0; i < 60; i++){ const a = R(0, 6.28), d = Math.sqrt(r()) * 160; blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(10, 18), R(8, 14), 0, "#FFFFFF", .35, 8); } x.strokeStyle = "#3F8A2E"; x.lineWidth = 4; for (let i = 0; i < 30; i++){ const sx = cx + R(-150, 150), sy = cy + R(-150, 150); x.beginPath(); x.moveTo(sx, sy); x.lineTo(sx + R(-14, 14), sy + R(-14, 14)); x.stroke(); } }
+    if (P.one === "risotto"){ blob(cx, cy, 200, 180, 0, shade(cx, cy, 200, "#F4E6BE", "#D9C38A"), .08, 18); for (let i = 0; i < 260; i++){ x.save(); x.translate(cx + R(-170, 170), cy + R(-150, 150)); if (Math.hypot(x.getTransform().e - cx, x.getTransform().f - cy) > 180){ x.restore(); continue; } x.rotate(R(0, 3)); x.fillStyle = "rgba(255,255,255,.7)"; x.beginPath(); x.ellipse(0, 0, 7, 3.5, 0, 0, 6.28); x.fill(); x.restore(); } for (let i = 0; i < 26; i++){ x.fillStyle = "#6FAE3E"; x.beginPath(); x.arc(cx + R(-140, 140), cy + R(-130, 130), R(8, 11), 0, 6.28); x.fill(); } for (let i = 0; i < 90; i++){ x.fillStyle = "#FFF7DC"; x.fillRect(cx + R(-140, 140), cy + R(-130, 130), 5, 2); } }
+    if (P.one === "spaghetti" || P.one === "penne"){
+      if (P.one === "spaghetti"){ x.lineCap = "round"; for (let i = 0; i < 70; i++){ x.strokeStyle = r() > .5 ? "#F2D88E" : "#E5C46E"; x.lineWidth = 6; x.beginPath(); const a0 = R(0, 6.28); for (let a = 0; a < 6; a += .25){ const rr = R(30, 170); const qx = cx + Math.cos(a0 + a)*rr, qy = cy + Math.sin(a0 + a)*rr*.9; a === 0 ? x.moveTo(qx, qy) : x.lineTo(qx, qy); } x.stroke(); } blob(cx, cy - 10, 110, 90, 0, shade(cx, cy, 110, "#C9432C", "#8C2A17"), .2, 16); for (let i = 0; i < 20; i++) blob(cx + R(-80, 80), cy + R(-70, 60), R(10, 18), R(8, 14), 0, "#6E2814", .3, 8); }
+      else { for (let i = 0; i < 60; i++){ x.save(); const a = R(0, 6.28), d = Math.sqrt(r()) * 180; x.translate(cx + Math.cos(a)*d, cy + Math.sin(a)*d); x.rotate(R(0, 3)); x.fillStyle = shade(0, 0, 40, "#F5DB95", "#DDB463"); x.beginPath(); x.moveTo(-34, -12); x.lineTo(28, -16); x.lineTo(34, 12); x.lineTo(-28, 16); x.closePath(); x.fill(); x.strokeStyle = "rgba(170,120,40,.35)"; x.lineWidth = 2; for (let k = -24; k < 28; k += 9){ x.beginPath(); x.moveTo(k, -14); x.lineTo(k + 6, 14); x.stroke(); } x.restore(); } for (let i = 0; i < 10; i++) blob(cx + R(-140, 140), cy + R(-130, 130), 18, 10, R(0,3), "#A83A22", .3, 8); for (let i = 0; i < 12; i++) blob(cx + R(-140, 140), cy + R(-130, 130), R(14, 20), R(10, 14), R(0,3), "#F6EEDC", .3, 8); }
+      for (let i = 0; i < 160; i++){ x.fillStyle = "rgba(255,250,230,.95)"; x.fillRect(cx + R(-120, 120), cy + R(-110, 100), 3, 3); }
+      herbs(cx + 30, cy - 30, 50, 6);
+    }
+    if (P.one === "pancakes"){ for (let i = 0; i < 3; i++){ const bx = cx - 90 + i*80, by = cy - 30 + (i % 2)*60; blob(bx, by, 95, 85, R(0, 3), shade(bx, by, 95, "#E3AB52", "#A9681F"), .14, 16); for (let k = 0; k < 40; k++){ x.fillStyle = "rgba(110,60,15,.45)"; x.fillRect(bx + R(-70, 70), by + R(-60, 60), 4, 3); } } x.fillStyle = "#FBF7EE"; blob(cx + 140, cy + 130, 55, 45, 0, "#FBF7EE", .12, 14); herbs(cx + 140, cy + 120, 20, 5); }
+    // side
+    const sx = cx + 130, sy = cy + 50;
+    switch (P.side){
+      case "rice": blob(sx, sy, 120, 100, 0, "#F6F1E4", .1, 16); for (let i = 0; i < 260; i++){ const a = R(0, 6.28), d = Math.sqrt(r()) * 105; x.save(); x.translate(sx + Math.cos(a)*d, sy + Math.sin(a)*d*.85); x.rotate(R(0, 3)); x.fillStyle = r() > .5 ? "#FFFFFF" : "#E6DFCB"; x.beginPath(); x.ellipse(0, 0, 8, 3.5, 0, 0, 6.28); x.fill(); x.restore(); } break;
+      case "potatoes": for (let i = 0; i < 9; i++) blob(sx + R(-80, 80), sy + R(-70, 70), R(30, 42), R(26, 36), R(0, 3), shade(sx, sy, 60, "#F3D27A", "#D2A043"), .2, 12); herbs(sx, sy, 70, 10); break;
+      case "potsalad": for (let i = 0; i < 26; i++) blob(sx + R(-90, 90), sy + R(-80, 80), R(18, 26), R(14, 20), R(0, 3), "#F2E2B0", .25, 10); for (let i = 0; i < 18; i++) blob(sx + R(-90, 90), sy + R(-80, 80), 9, 7, 0, ["#E37A2B","#7AAE3E"][i % 2], .2, 8); break;
+      case "mash": blob(sx, sy, 115, 100, 0, shade(sx, sy, 110, "#FFF5D6", "#E7D49C"), .1, 16); x.strokeStyle = "rgba(200,170,100,.45)"; x.lineWidth = 6; x.beginPath(); for (let a = 0; a < 14; a += .2){ const rr = a * 6; const qx = sx + Math.cos(a)*rr, qy = sy + Math.sin(a)*rr*.85; a === 0 ? x.moveTo(qx, qy) : x.lineTo(qx, qy); } x.stroke(); x.fillStyle = "#F4D35E"; blob(sx, sy - 4, 22, 16, 0, "#F6D55F", .1, 10); break;
+      case "dumplings": for (let i = 0; i < 4; i++){ const bx = sx - 60 + i*42, by = sy - 30 + i*20; x.save(); x.translate(bx, by); x.rotate(.5); x.fillStyle = "#EDE5D0"; x.beginPath(); x.ellipse(0, 0, 32, 78, 0, 0, 6.28); x.fill(); x.fillStyle = "rgba(170,150,110,.45)"; for (let k = 0; k < 24; k++){ x.beginPath(); x.arc(R(-20, 20), R(-60, 60), R(2, 4), 0, 6.28); x.fill(); } x.strokeStyle = "#C9B58A"; x.lineWidth = 4; x.beginPath(); x.ellipse(0, 0, 32, 78, 0, 0, 6.28); x.stroke(); x.restore(); } break;
+      case "fries": for (let i = 0; i < 30; i++){ x.save(); x.translate(sx + R(-90, 90), sy + R(-80, 80)); x.rotate(R(0, 3.14)); x.fillStyle = r() > .3 ? "#F2C14E" : "#DFA43A"; x.fillRect(-55, -8, 110, 16); x.restore(); } break;
+      case "quinoa": for (let i = 0; i < 320; i++){ const a = R(0, 6.28), d = Math.sqrt(r()) * 105; x.fillStyle = r() > .5 ? "#EAD9A8" : "#CDB57A"; x.beginPath(); x.arc(sx + Math.cos(a)*d, sy + Math.sin(a)*d*.85, 4, 0, 6.28); x.fill(); } break;
+      case "noodles": x.lineCap = "round"; for (let i = 0; i < 40; i++){ x.strokeStyle = "#EED597"; x.lineWidth = 7; x.beginPath(); const a0 = R(0, 6.28); for (let a = 0; a < 4; a += .3){ const rr = R(20, 100); const qx = sx + Math.cos(a0 + a)*rr, qy = sy + Math.sin(a0 + a)*rr*.85; a === 0 ? x.moveTo(qx, qy) : x.lineTo(qx, qy); } x.stroke(); } break;
+    }
+    // extras
+    const ex = cx + 20, ey = cy + 175;
+    if (P.extra === "peas" && P.side === "rice"){ for (let i = 0; i < 26; i++){ x.fillStyle = shade(sx, sy, 20, "#9BD15A", "#4F8E26"); x.beginPath(); x.arc(sx + R(-90, 90), sy + R(-75, 75), 9, 0, 6.28); x.fill(); } }
+    else if (P.extra === "peas"){ for (let i = 0; i < 24; i++){ x.fillStyle = "#6FB03A"; x.beginPath(); x.arc(ex + R(-60, 60), ey + R(-30, 30), 10, 0, 6.28); x.fill(); } }
+    if (P.extra === "cabbage"){ x.lineCap = "round"; for (let i = 0; i < 40; i++){ x.strokeStyle = r() > .4 ? "#7B2F6B" : "#9C4A86"; x.lineWidth = 8; x.beginPath(); const qx = ex + R(-90, 90), qy = ey + R(-40, 30); x.moveTo(qx, qy); x.quadraticCurveTo(qx + R(-30, 30), qy + R(-20, 20), qx + R(-40, 40), qy + R(-20, 20)); x.stroke(); } }
+    if (P.extra === "cranberry"){ blob(ex - 60, ey - 10, 50, 36, 0, "#F8F2E7", .1, 12); for (let i = 0; i < 16; i++){ x.fillStyle = shade(ex, ey, 14, "#E24B4B", "#9C1C24"); x.beginPath(); x.arc(ex + 30 + R(-30, 30), ey + R(-20, 20), 11, 0, 6.28); x.fill(); } x.fillStyle = "#F7EFD9"; blob(ex - 60, ey - 10, 36, 26, 0, "#FFFFFF", .15, 10); }
+    if (P.extra === "greens" || (!P.extra && !P.one && P.protein !== "burger")){ for (let i = 0; i < 12; i++) blob(ex + R(-70, 70), ey + R(-35, 25), R(24, 38), R(14, 22), R(0, 3), ["#5E9C35","#7DB443","#3F7A2A"][Math.floor(r()*3)], .3, 10); for (let i = 0; i < 4; i++) blob(ex + R(-60, 60), ey + R(-25, 20), 20, 20, 0, "#D63F2E", .1, 10); }
+    if (P.protein === "burger" && P.side === "fries"){ /* fries already drawn */ }
+    if (P.lemon){ x.save(); x.translate(px + 110, py - 100); x.rotate(.6); x.fillStyle = "#F5D23A"; x.beginPath(); x.arc(0, 0, 42, Math.PI, 0); x.fill(); x.fillStyle = "#FFF3A8"; x.beginPath(); x.arc(0, 0, 34, Math.PI, 0); x.fill(); x.strokeStyle = "#F5D23A"; x.lineWidth = 3; for (let k = 1; k < 6; k++){ const a = Math.PI + k * Math.PI / 6; x.beginPath(); x.moveTo(0, 0); x.lineTo(Math.cos(a)*34, Math.sin(a)*34); x.stroke(); } x.restore(); }
+    if (["chicken","roast","leg","schnitzel"].includes(P.protein)) herbs(px - 10, py - 40, 50, 6);
+  }
+  let url = c.toDataURL("image/webp", 0.85);
+  if (!url.startsWith("data:image/webp")) url = c.toDataURL("image/jpeg", 0.85);
+  return url;
+}
+function shadeHex(hex, amt){
+  const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = n >> 8 & 255, b = n & 255;
+  const f = v => Math.max(0, Math.min(255, Math.round(amt < 0 ? v * (1 + amt) : v + (255 - v) * amt)));
+  return "#" + [f(r), f(g), f(b)].map(v => v.toString(16).padStart(2, "0")).join("");
+}
+
+
+/* ---------- štart ---------- */
+$("#brandName").textContent = CANTEEN_NAME;
+document.title = `Jedálny lístok – ${CANTEEN_NAME}`;
+$("#topEdu").href = EDUPAGE_URL;
+state.selected = defaultDay();
+state.weekStart = mondayOf(state.selected);
+renderAuth();
+render();
+</script>
+</body>
+</html>
