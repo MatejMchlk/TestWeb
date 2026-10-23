@@ -1,0 +1,1474 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jedálny lístok</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍲</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F4EE; --surface:#FFFFFF; --surface-2:#E7ECE2; --surface-3:#DCE4D5;
+  --ink:#16231B; --ink-2:#4A5A4F; --ink-3:#77867B; --line:#D3DCCD;
+  --basil:#2D6A4C; --basil-2:#245A40; --on-basil:#FFFFFF; --basil-soft:#DCEBDF;
+  --saffron:#E0A030; --saffron-soft:#F8E8C6; --tomato:#C2412F; --tomato-soft:#F6DDD7;
+  --veg:#557F25; --vegan:#1F7F63;
+  --shadow:0 1px 2px rgba(22,35,27,.06), 0 8px 24px -12px rgba(22,35,27,.18);
+  --font-d:"Young Serif", Georgia, "Times New Roman", serif;
+  --font-b:"Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#101813; --surface:#18221C; --surface-2:#202D25; --surface-3:#2A3A30;
+    --ink:#E8EFE9; --ink-2:#AEBDB2; --ink-3:#83958A; --line:#2D3C33;
+    --basil:#74C095; --basil-2:#8BD1A8; --on-basil:#0C1A12; --basil-soft:#1F3A2B;
+    --saffron:#F0B955; --saffron-soft:#3A2F17; --tomato:#EC7B66; --tomato-soft:#3D221D;
+    --veg:#A6CF6B; --vegan:#6FD1B0;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--font-b);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--font-d);font-weight:400;line-height:1.15;margin:0}
+p{margin:0}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:2px;border-radius:6px}
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 20px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);margin-top:calc(-1 * env(safe-area-inset-top,0px))}
+.topbar-in{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--font-d);font-size:1.25rem}
+.brand-mark{width:36px;height:36px;border-radius:50%;background:var(--basil);color:var(--on-basil);display:grid;place-items:center}
+.brand-mark svg{width:20px;height:20px}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:10px 18px;font-weight:600;font-size:.95rem;cursor:pointer;background:var(--basil);color:var(--on-basil);text-decoration:none;line-height:1.2;transition:background .15s, transform .1s}
+.btn:hover{background:var(--basil-2)}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn-soft{background:var(--surface-2);color:var(--ink)}
+.btn-soft:hover{background:var(--surface-3)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{background:var(--surface-2)}
+.btn-danger{background:var(--tomato-soft);color:var(--tomato)}
+.btn-danger:hover{background:var(--tomato);color:#fff}
+.btn-sm{padding:7px 13px;font-size:.85rem}
+.icon-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;flex:none}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn svg{width:20px;height:20px}
+.linklike{background:none;border:0;padding:0;color:var(--basil);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-weight:500}
+.count{background:var(--saffron);color:#2B1D05;border-radius:999px;font-size:.75rem;padding:1px 8px;font-weight:700}
+
+/* ---------- week bar ---------- */
+.weekbar{display:flex;align-items:center;gap:14px;padding:28px 0 18px}
+.week-label{flex:1;min-width:0}
+.week-label h1{font-size:clamp(1.6rem,4vw,2.3rem)}
+.week-label p{color:var(--ink-2);margin-top:2px}
+
+/* ---------- day strip (the signature element) ---------- */
+.daystrip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding-bottom:6px}
+.day-tab{position:relative;border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 10px 12px 14px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:96px;transition:border-color .15s, background .15s}
+.day-tab:hover{border-color:var(--basil)}
+.day-tab .dn{font-size:.85rem;color:var(--ink-2);font-weight:600}
+.day-tab .dd{font-family:var(--font-d);font-size:2.3rem;line-height:1}
+.day-tab .dm{font-size:.8rem;color:var(--ink-3)}
+.day-tab[aria-current="true"]{background:var(--basil);border-color:var(--basil);color:var(--on-basil)}
+.day-tab[aria-current="true"] .dn,.day-tab[aria-current="true"] .dm{color:inherit;opacity:.85}
+.day-tab.past:not([aria-current="true"]){opacity:.62}
+.day-tab .today-dot{position:absolute;top:12px;right:12px;font-size:.7rem;font-weight:700;background:var(--saffron);color:#2B1D05;border-radius:999px;padding:1px 8px}
+.day-tab .ord-dot{position:absolute;bottom:12px;right:12px;width:22px;height:22px;border-radius:50%;background:var(--saffron-soft);color:var(--ink);display:grid;place-items:center}
+.day-tab[aria-current="true"] .ord-dot{background:rgba(255,255,255,.22);color:inherit}
+.day-tab .ord-dot svg{width:13px;height:13px}
+
+/* ---------- day view ---------- */
+.day-head{display:grid;grid-template-columns:1fr auto;gap:12px 24px;align-items:end;padding:30px 0 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.day-head h2{font-size:clamp(1.9rem,5vw,3rem)}
+.day-head .sub{color:var(--ink-2);margin-top:6px;font-size:1.05rem}
+.day-intro{grid-column:1/-1;max-width:70ch;padding:14px 18px;border-radius:14px;background:var(--surface-2);display:flex;gap:14px}
+.day-intro strong{display:block;font-family:var(--font-d);font-weight:400;font-size:1.15rem;margin-bottom:2px}
+.day-intro p{color:var(--ink-2)}
+.deadline{display:inline-flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;background:var(--basil-soft);color:var(--basil);white-space:nowrap}
+.deadline.closed{background:var(--surface-2);color:var(--ink-2)}
+.deadline svg{width:16px;height:16px}
+
+.cat{padding:26px 0 4px}
+.cat-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.cat-head h3{font-size:1.45rem}
+.cat-head .n{color:var(--ink-3);font-size:.9rem}
+.cat-swatch{width:12px;height:12px;border-radius:4px;flex:none;align-self:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+
+/* ---------- meal card ---------- */
+.meal{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--line)}
+.meal.is-off{opacity:.72}
+.photo-btn{all:unset;cursor:zoom-in;display:block;position:relative;aspect-ratio:4/3;background:var(--surface-2);overflow:hidden}
+.photo-btn:focus-visible{outline:3px solid var(--saffron);outline-offset:-3px}
+.photo-btn img{width:100%;height:100%;object-fit:cover}
+.photo-tags{position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface);color:var(--ink)}
+.tag svg{width:12px;height:12px}
+.tag.veg{color:var(--veg)} .tag.vegan{color:var(--vegan)}
+.tag.mine{background:var(--saffron);color:#2B1D05}
+.ph{width:100%;height:100%;display:grid;place-items:center;color:var(--ink-3)}
+.ph svg{width:30%;height:auto;opacity:.75}
+.meal-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.meal-body h4{font-family:var(--font-d);font-weight:400;font-size:1.2rem;line-height:1.25;margin:0}
+.meal-desc{color:var(--ink-2);font-size:.93rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.facts{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.85rem;color:var(--ink-2)}
+.facts b{color:var(--ink);font-weight:600}
+.alg{display:inline-flex;flex-wrap:wrap;gap:4px;vertical-align:middle}
+.alg span{min-width:22px;height:22px;padding:0 5px;border-radius:6px;background:var(--surface-2);color:var(--ink);font-size:.75rem;font-weight:700;display:inline-grid;place-items:center}
+.rating{display:inline-flex;align-items:center;gap:4px;font-size:.85rem;color:var(--ink-2)}
+.rating svg{width:15px;height:15px;color:var(--saffron)}
+.meal-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:6px;border-top:1px dashed var(--line)}
+.price{font-family:var(--font-d);font-size:1.3rem}
+.avail{font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:6px}
+.avail::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.avail.ok{color:var(--basil)} .avail.low{color:var(--saffron)} .avail.sold,.avail.off{color:var(--tomato)} .avail.closed{color:var(--ink-3)}
+.foot-left{display:flex;flex-direction:column;gap:2px}
+
+.empty{padding:60px 20px;text-align:center;color:var(--ink-2);max-width:46ch;margin:0 auto}
+.empty h3{font-size:1.5rem;color:var(--ink);margin-bottom:8px}
+.skeleton{border-radius:20px;background:linear-gradient(90deg,var(--surface-2),var(--surface-3),var(--surface-2));background-size:200% 100%;animation:sh 1.4s infinite;aspect-ratio:4/5}
+@keyframes sh{to{background-position:-200% 0}}
+@media (prefers-reduced-motion: reduce){.skeleton{animation:none}*{transition:none!important}}
+
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:48px 20px 40px;color:var(--ink-3);font-size:.9rem}
+
+/* ---------- dialogs ---------- */
+dialog.dlg{border:0;padding:0;border-radius:24px;background:var(--surface);color:var(--ink);width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 32px);box-shadow:0 30px 80px -20px rgba(0,0,0,.45)}
+dialog.dlg-wide{width:min(900px,calc(100vw - 24px))}
+dialog.dlg-small{width:min(420px,calc(100vw - 24px))}
+dialog.dlg::backdrop{background:rgba(10,20,14,.55);backdrop-filter:blur(3px)}
+dialog.dlg[open]{animation:pop .18s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 22px 0}
+.dlg-head h2{font-size:1.5rem}
+.dlg-body{padding:18px 22px 22px}
+.dlg-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;padding-top:18px}
+dialog.drawer{margin:0 0 0 auto;height:100dvh;max-height:100dvh;border-radius:24px 0 0 24px;width:min(460px,100vw)}
+dialog.drawer[open]{animation:slide .22s ease-out}
+@keyframes slide{from{transform:translateX(30px);opacity:0}}
+dialog.fullscreen{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0;margin:0;background:var(--bg)}
+
+.detail{display:grid;grid-template-columns:1.25fr 1fr}
+.detail-photo{aspect-ratio:4/3;background:var(--surface-2);position:relative}
+.detail-photo img{width:100%;height:100%;object-fit:cover}
+.detail-info{padding:24px;display:flex;flex-direction:column;gap:14px}
+.detail-info h2{font-size:1.7rem}
+.close-float{position:absolute;top:12px;right:12px;background:var(--surface);z-index:2}
+.alg-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:.9rem}
+.alg-list li{display:flex;gap:8px;align-items:center}
+@media (max-width:760px){.detail{grid-template-columns:1fr}}
+
+/* forms */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label,.field .lbl{font-weight:600;font-size:.9rem}
+.field .hint{font-size:.8rem;color:var(--ink-3)}
+.input,select.input,textarea.input{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;min-height:44px}
+textarea.input{min-height:84px;resize:vertical}
+.input:focus{outline:2px solid var(--basil);outline-offset:0;border-color:transparent}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0 14px}
+.check{display:flex;align-items:center;gap:8px;font-size:.92rem;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--basil)}
+.alg-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px 12px}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.stepper button{width:44px;height:44px;border:0;background:var(--surface-2);cursor:pointer;font-size:1.2rem}
+.stepper output{min-width:48px;text-align:center;font-weight:700}
+.order-sum{display:flex;gap:14px;align-items:center;padding:12px;border-radius:16px;background:var(--surface-2);margin-bottom:18px}
+.order-sum .thumb{width:84px;flex:none;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--surface-3)}
+.order-sum .thumb img{width:100%;height:100%;object-fit:cover}
+
+/* my orders */
+.mo-list{display:flex;flex-direction:column;gap:12px}
+.mo{display:grid;grid-template-columns:72px 1fr;gap:12px;padding:12px;border:1px solid var(--line);border-radius:16px}
+.mo .thumb{aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--surface-2)}
+.mo .thumb img{width:100%;height:100%;object-fit:cover}
+.mo h4{margin:0 0 2px;font-size:1rem}
+.mo .meta{font-size:.85rem;color:var(--ink-2)}
+.mo .acts{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.mo.cancelled{opacity:.55}
+.stars{display:inline-flex;gap:2px}
+.stars button{background:none;border:0;padding:2px;cursor:pointer;color:var(--line)}
+.stars button.on{color:var(--saffron)}
+.stars svg{width:22px;height:22px}
+
+/* toasts */
+.toasts{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:9999;width:min(440px,calc(100vw - 24px));pointer-events:none}
+.toast{background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:14px;font-weight:500;box-shadow:var(--shadow);animation:pop .2s ease-out}
+.toast.err{background:var(--tomato);color:#fff}
+
+/* setup screen */
+.setup{max-width:640px;margin:60px auto;background:var(--surface);border-radius:24px;padding:28px;border:1px solid var(--line)}
+.setup h1{font-size:1.9rem;margin-bottom:10px}
+.setup ol{padding-left:20px;color:var(--ink-2)}
+.setup code{background:var(--surface-2);padding:2px 6px;border-radius:6px;font-size:.9em}
+
+/* ---------- admin ---------- */
+.adm{min-height:100%;display:flex;flex-direction:column}
+.adm-top{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.adm-top-in{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:62px}
+.adm-top h2{font-size:1.35rem}
+.adm-tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
+.adm-tabs button{border:0;background:none;padding:9px 14px;border-radius:999px;font-weight:600;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.adm-tabs button[aria-selected="true"]{background:var(--basil-soft);color:var(--basil)}
+.adm-main{padding:22px 0 60px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:18px}
+.panel h3{font-size:1.25rem;margin-bottom:12px}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.toolbar .grow{flex:1}
+.adm-days{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.adm-days button{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:600}
+.adm-days button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.adm-row{display:grid;grid-template-columns:88px 1fr auto;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.adm-row:first-child{border-top:0}
+.adm-row .thumb{aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--surface-2)}
+.adm-row .thumb img{width:100%;height:100%;object-fit:cover}
+.adm-row .t{font-weight:600}
+.adm-row .s{font-size:.85rem;color:var(--ink-2)}
+.adm-row .a{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:620px){.adm-row{grid-template-columns:72px 1fr}.adm-row .a{grid-column:1/-1;justify-content:flex-start}}
+.callout{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:16px 18px;border-radius:16px;background:var(--saffron-soft);margin-bottom:18px}
+.callout p{max-width:60ch}
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.img-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
+.img-card .pic{aspect-ratio:4/3;background:var(--surface-2)}
+.img-card .pic img{width:100%;height:100%;object-fit:cover}
+.img-card .cap{padding:10px 12px;font-size:.85rem;display:flex;flex-direction:column;gap:6px;flex:1}
+.img-card .cap .u{color:var(--ink-3)}
+.img-card .cap .a{display:flex;gap:6px;margin-top:auto}
+button.img-card{cursor:pointer;text-align:left;padding:0;font:inherit}
+button.img-card:hover{border-color:var(--basil)}
+button.img-card.sel{outline:3px solid var(--basil)}
+.preview{aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:var(--surface-2);border:1px dashed var(--line);position:relative}
+.preview img{width:100%;height:100%;object-fit:cover}
+.preview .badge{position:absolute;left:10px;bottom:10px}
+.editor{display:grid;grid-template-columns:320px 1fr;gap:24px}
+@media (max-width:760px){.editor{grid-template-columns:1fr}}
+.tbl{width:100%;border-collapse:collapse;font-size:.92rem}
+.tbl th,.tbl td{text-align:left;padding:9px 8px;border-top:1px solid var(--line);vertical-align:top}
+.tbl th{font-weight:600;color:var(--ink-2);border-top:0}
+.tbl-wrap{overflow-x:auto}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.sum{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.sum .big{font-family:var(--font-d);font-size:1.8rem;line-height:1}
+.muted{color:var(--ink-2)}
+.progress{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:10px}
+.progress i{display:block;height:100%;background:var(--basil);width:0;transition:width .2s}
+
+@media (max-width:760px){
+  .wrap{padding:0 14px}
+  .daystrip{grid-template-columns:repeat(5,minmax(76px,1fr));overflow-x:auto;scroll-snap-type:x mandatory}
+  .day-tab{min-height:84px;padding:10px;scroll-snap-align:start}
+  .day-tab .dd{font-size:1.8rem}
+  .day-tab .today-dot{top:8px;right:8px}
+  .day-head{grid-template-columns:1fr}
+  .weekbar{padding-top:18px}
+  .grid{grid-template-columns:1fr}
+}
+@media print{.topbar,.foot,.weekbar,.daystrip{display:none}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#" id="brandLink">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18a9 9 0 0 1-18 0Z"/><path d="M8 7c0-1.5 1-2 1-3.5M12 7c0-1.5 1-2 1-3.5M16 7c0-1.5 1-2 1-3.5"/></svg></span>
+      <span id="brandName">Jedáleň</span>
+    </a>
+    <button class="btn btn-ghost" id="btnMyOrders" data-act="my-orders">Moje objednávky <span class="count" id="myCount" hidden></span></button>
+  </div>
+</header>
+
+<main class="wrap" id="app">
+  <section class="weekbar" aria-label="Výber týždňa">
+    <button class="icon-btn" data-act="week" data-dir="-1" aria-label="Predchádzajúci týždeň"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg></button>
+    <div class="week-label"><h1 id="weekTitle">Jedálny lístok</h1><p id="weekRange">&nbsp;</p></div>
+    <button class="btn btn-soft btn-sm" data-act="week-today" id="btnThisWeek" hidden>Tento týždeň</button>
+    <button class="icon-btn" data-act="week" data-dir="1" aria-label="Nasledujúci týždeň"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>
+  </section>
+  <nav class="daystrip" id="dayStrip" aria-label="Dni v týždni"></nav>
+  <section id="dayView" aria-live="polite"></section>
+</main>
+
+<footer class="wrap foot">
+  <p>Alergény sú označené číslami podľa nariadenia EÚ č. 1169/2011. <button class="linklike" data-act="allergens">Zoznam alergénov</button></p>
+  <button class="linklike" data-act="admin">Správa jedálne</button>
+</footer>
+
+<dialog id="dlg-detail" class="dlg dlg-wide"></dialog>
+<dialog id="dlg-order" class="dlg"></dialog>
+<dialog id="dlg-orders" class="dlg drawer"></dialog>
+<dialog id="dlg-info" class="dlg"></dialog>
+<dialog id="dlg-login" class="dlg dlg-small"></dialog>
+<dialog id="dlg-admin" class="dlg fullscreen"></dialog>
+<dialog id="dlg-meal" class="dlg dlg-wide"></dialog>
+<dialog id="dlg-picker" class="dlg dlg-wide"></dialog>
+<dialog id="dlg-confirm" class="dlg dlg-small"></dialog>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   NASTAVENIE – sem vložte údaje zo Supabase
+   (Supabase → Project Settings → API Keys / Data API)
+   ===================================================================== */
+const SUPABASE_URL = "SEM_VLOZ_PROJECT_URL";
+const SUPABASE_PUBLISHABLE_KEY = "SEM_VLOZ_PUBLISHABLE_KEY";
+
+/* ===================================================================== */
+const BUCKET = "meal-images";
+const TZ = "Europe/Bratislava";
+const BASE = SUPABASE_URL.trim().replace(/\/+$/, "");
+const DAY_NAMES = ["Pondelok","Utorok","Streda","Štvrtok","Piatok","Sobota","Nedeľa"];
+const DAY_SHORT = ["Po","Ut","St","Št","Pi","So","Ne"];
+const MONTHS_GEN = ["januára","februára","marca","apríla","mája","júna","júla","augusta","septembra","októbra","novembra","decembra"];
+const KIND_LABEL = {soup:"Polievka", main:"Hlavné jedlo", vegetarian:"Vegetariánske", vegan:"Vegánske", side:"Príloha / doplnok"};
+const KIND_COLOR = {soup:"#E0A030", main:"#2D6A4C", vegetarian:"#557F25", vegan:"#1F7F63", side:"#B5653A"};
+const LS_TOKENS = "jedalen.orderTokens";
+const LS_NAME = "jedalen.customerName";
+const SS_ADMIN = "jedalen.adminPassword";
+
+/* ---------- small helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = (n) => n == null ? "" : new Intl.NumberFormat("sk-SK", {style:"currency", currency:"EUR"}).format(n);
+const plural = (n, one, few, many) => n === 1 ? one : (n >= 2 && n <= 4 ? few : many);
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+const sess = {
+  get(k){ try { return sessionStorage.getItem(k); } catch { return null; } },
+  set(k, v){ try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch {} }
+};
+
+const ICON = {
+  star:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.8 2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg>',
+  leaf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19 13 11"/></svg>',
+  sprout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 21v-9"/><path d="M12 12C12 7 9 5 4 5c0 5 3 7 8 7Z"/><path d="M12 12c0-4 2.5-6 8-6 0 4-3 6-8 6Z"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="22" height="22" aria-hidden="true" style="flex:none;margin-top:3px"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>'
+};
+const PH_ICON = {
+  soup:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M8 32h48a24 24 0 0 1-48 0Z"/><path d="M22 22c0-4 3-5 3-9M32 22c0-4 3-5 3-9M42 22c0-4 3-5 3-9"/></svg>',
+  main:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="32" cy="34" r="20"/><circle cx="32" cy="34" r="12"/><path d="M6 10v16M3 10v8a3 3 0 0 0 6 0v-8M58 10c-4 2-5 8-5 14h5v20"/></svg>',
+  vegetarian:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M14 50c0-22 12-34 38-36 0 24-12 36-36 36"/><path d="M14 50 36 28"/></svg>',
+  vegan:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M32 56V32"/><path d="M32 32C32 20 25 14 12 14c0 12 7 18 20 18Z"/><path d="M32 32c0-10 6-16 20-16 0 10-7 16-20 16Z"/></svg>',
+  side:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M10 30h44l-5 20H15Z"/><path d="M20 30c0-8 5-14 12-14s12 6 12 14"/></svg>'
+};
+
+/* ---------- dates in Europe/Bratislava ---------- */
+function nowBA(){
+  const parts = new Intl.DateTimeFormat("en-GB", {timeZone:TZ, year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", hourCycle:"h23"}).formatToParts(new Date());
+  const g = t => parts.find(p => p.type === t).value;
+  return {date:`${g("year")}-${g("month")}-${g("day")}`, time:`${g("hour")}:${g("minute")}`};
+}
+const parseISO = s => { const [y,m,d] = s.split("-").map(Number); return new Date(Date.UTC(y, m-1, d)); };
+const toISO = d => d.toISOString().slice(0, 10);
+const addDays = (s, n) => { const d = parseISO(s); d.setUTCDate(d.getUTCDate() + n); return toISO(d); };
+const weekday = s => (parseISO(s).getUTCDay() + 6) % 7;
+const mondayOf = s => addDays(s, -weekday(s));
+function isoWeek(s){
+  const d = parseISO(s); d.setUTCDate(d.getUTCDate() - weekday(s) + 3);
+  const y = d.getUTCFullYear(); const jan4 = new Date(Date.UTC(y, 0, 4));
+  const w1 = new Date(jan4); w1.setUTCDate(jan4.getUTCDate() - ((jan4.getUTCDay() + 6) % 7) + 3);
+  return 1 + Math.round((d - w1) / 604800000);
+}
+const fmtDay = s => { const d = parseISO(s); return `${d.getUTCDate()}. ${MONTHS_GEN[d.getUTCMonth()]}`; };
+const fmtShort = s => { const d = parseISO(s); return `${d.getUTCDate()}. ${d.getUTCMonth()+1}.`; };
+const fmtFull = s => `${DAY_NAMES[weekday(s)]} ${fmtDay(s)}`;
+
+/* ---------- Supabase REST ---------- */
+function apiHeaders(extra = {}){
+  return {apikey: SUPABASE_PUBLISHABLE_KEY, Authorization: "Bearer " + SUPABASE_PUBLISHABLE_KEY, ...extra};
+}
+function friendly(data, status){
+  const msg = (data && (data.message || data.error_description || data.error || data.msg)) || "";
+  if (/relation .* does not exist|Could not find the function|schema cache/i.test(msg)) return "Databáza ešte nie je pripravená. Spustite súbor setup.sql v Supabase.";
+  if (/Invalid API key|No API key|invalid.*jwt/i.test(msg) || status === 401) return "Neplatný Supabase kľúč. Skontrolujte SUPABASE_PUBLISHABLE_KEY v súbore index.html.";
+  if (/row-level security|violates/i.test(msg)) return "Operácia nie je povolená bezpečnostnými pravidlami databázy.";
+  return msg || `Chyba servera (${status}).`;
+}
+async function request(url, opts = {}){
+  let res;
+  try { res = await fetch(url, opts); }
+  catch { throw new Error("Nepodarilo sa spojiť so Supabase. Skontrolujte internet a SUPABASE_URL."); }
+  const text = await res.text();
+  let data = null; try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+  if (!res.ok) throw new Error(friendly(data, res.status));
+  return data;
+}
+const rest = (path) => request(`${BASE}/rest/v1/${path}`, {headers: apiHeaders()});
+const rpc = (fn, args = {}) => request(`${BASE}/rest/v1/rpc/${fn}`, {method:"POST", headers: apiHeaders({"Content-Type":"application/json"}), body: JSON.stringify(args)});
+const publicUrl = (path) => path ? `${BASE}/storage/v1/object/public/${BUCKET}/${path.split("/").map(encodeURIComponent).join("/")}` : "";
+async function uploadToStorage(path, blob){
+  return request(`${BASE}/storage/v1/object/${BUCKET}/${path}`, {
+    method:"POST", headers: apiHeaders({"Content-Type": blob.type || "image/webp", "x-upsert":"false", "cache-control":"max-age=31536000"}), body: blob
+  });
+}
+async function deleteFromStorage(path){
+  return request(`${BASE}/storage/v1/object/${BUCKET}/${path}`, {method:"DELETE", headers: apiHeaders()});
+}
+
+/* ---------- UI helpers ---------- */
+function toast(msg, isErr = false){
+  const el = document.createElement("div");
+  el.className = "toast" + (isErr ? " err" : "");
+  el.textContent = msg;
+  $("#toasts").appendChild(el);
+  setTimeout(() => el.remove(), isErr ? 6000 : 3500);
+}
+function openDlg(id){ const d = document.getElementById(id); if (!d.open) d.showModal(); return d; }
+function closeDlg(id){ const d = document.getElementById(id); if (d.open) d.close(); }
+function askConfirm(message, okLabel = "Potvrdiť", danger = false){
+  return new Promise(resolve => {
+    const d = $("#dlg-confirm");
+    d.innerHTML = `<div class="dlg-body"><p style="font-size:1.05rem">${esc(message)}</p>
+      <div class="dlg-actions"><button class="btn btn-soft" value="no">Späť</button><button class="btn ${danger ? "btn-danger" : ""}" value="yes">${esc(okLabel)}</button></div></div>`;
+    d.querySelectorAll("button").forEach(b => b.onclick = () => { d.close(); resolve(b.value === "yes"); });
+    d.onclose = () => resolve(false);
+    d.showModal();
+  });
+}
+function imgHTML(path, alt, kind){
+  const ph = `<div class="ph" style="background:linear-gradient(135deg, color-mix(in srgb, ${KIND_COLOR[kind] || KIND_COLOR.main} 18%, var(--surface-2)), var(--surface-2))">${PH_ICON[kind] || PH_ICON.main}</div>`;
+  if (!path) return ph;
+  return `<img src="${esc(publicUrl(path))}" alt="${esc(alt || "")}" loading="lazy" decoding="async" data-kind="${esc(kind || "main")}" onerror="imgFail(this)">`;
+}
+window.imgFail = function(img){
+  const kind = img.dataset.kind || "main";
+  const div = document.createElement("div");
+  div.className = "ph";
+  div.style.background = `linear-gradient(135deg, color-mix(in srgb, ${KIND_COLOR[kind] || KIND_COLOR.main} 18%, var(--surface-2)), var(--surface-2))`;
+  div.innerHTML = PH_ICON[kind] || PH_ICON.main;
+  img.replaceWith(div);
+};
+function starsHTML(avg, count){
+  if (!count) return `<span class="rating">Zatiaľ bez hodnotenia</span>`;
+  return `<span class="rating">${ICON.star}<b>${String(avg).replace(".", ",")}</b> (${count})</span>`;
+}
+
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const state = {
+  today: nowBA().date,
+  weekStart: mondayOf(nowBA().date),
+  selected: null,
+  config: {canteen_name:"Jedáleň", order_deadline:"09:30:00"},
+  categories: [], catById: new Map(),
+  allergens: new Map(),
+  meals: [], days: new Map(), stats: new Map(),
+  myOrders: [],
+  loading: false
+};
+
+async function fetchWeek(monday){
+  const from = monday, to = addDays(monday, 6);
+  const [meals, days, stats] = await Promise.all([
+    rest(`meals?select=*,image:images(id,storage_path,alt_text,title)&menu_date=gte.${from}&menu_date=lte.${to}&order=sort_order.asc,name.asc`),
+    rest(`menu_days?select=*&menu_date=gte.${from}&menu_date=lte.${to}`),
+    rpc("meal_stats", {p_from: from, p_to: to})
+  ]);
+  return {
+    meals,
+    days: new Map(days.map(d => [d.menu_date, d])),
+    stats: new Map(stats.map(s => [s.meal_id, s]))
+  };
+}
+
+async function loadBase(){
+  const [cfg, cats, algs] = await Promise.all([
+    rest("app_config?select=*&id=eq.1"),
+    rest("categories?select=*&order=sort_order.asc,name.asc"),
+    rest("allergens?select=*&order=id.asc")
+  ]);
+  if (cfg[0]) state.config = cfg[0];
+  state.categories = cats;
+  state.catById = new Map(cats.map(c => [c.id, c]));
+  state.allergens = new Map(algs.map(a => [a.id, a.name]));
+  $("#brandName").textContent = state.config.canteen_name;
+  document.title = `Jedálny lístok – ${state.config.canteen_name}`;
+}
+
+async function loadWeek(){
+  state.loading = true; renderAll();
+  try {
+    const w = await fetchWeek(state.weekStart);
+    state.meals = w.meals; state.days = w.days; state.stats = w.stats;
+  } catch (e) { toast(e.message, true); state.meals = []; }
+  state.loading = false; renderAll();
+}
+
+async function loadMyOrders(){
+  const tokens = store.get(LS_TOKENS, []);
+  if (!tokens.length){ state.myOrders = []; updateMyCount(); return; }
+  try {
+    state.myOrders = await rpc("my_orders", {p_tokens: tokens});
+    const valid = new Set(state.myOrders.map(o => o.token));
+    store.set(LS_TOKENS, tokens.filter(t => valid.has(t)));
+  } catch (e) { console.warn(e); }
+  updateMyCount();
+}
+function updateMyCount(){
+  const n = state.myOrders.filter(o => o.status === "active" && o.menu_date >= state.today).length;
+  const el = $("#myCount"); el.hidden = !n; el.textContent = n;
+}
+const myQtyFor = (mealId) => state.myOrders.filter(o => o.meal_id === mealId && o.status === "active").reduce((s, o) => s + o.quantity, 0);
+
+/* ---------- ordering rules ---------- */
+const deadline = () => String(state.config.order_deadline || "09:30").slice(0, 5);
+function orderWindowOpen(date){
+  const n = nowBA();
+  if (date > n.date) return true;
+  if (date < n.date) return false;
+  return n.time <= deadline();
+}
+function availability(m){
+  const st = state.stats.get(m.id); const ordered = st ? st.ordered : 0;
+  if (!m.is_available) return {key:"off", label:"Nedostupné", can:false};
+  if (m.portions_limit != null && ordered >= m.portions_limit) return {key:"sold", label:"Vypredané", can:false};
+  if (!orderWindowOpen(m.menu_date)) return {key:"closed", label: m.menu_date < nowBA().date ? "Výdaj ukončený" : "Objednávky uzavreté", can:false};
+  if (m.portions_limit != null){
+    const left = m.portions_limit - ordered;
+    return {key: left <= 5 ? "low" : "ok", label:`Zostáva ${left} ${plural(left,"porcia","porcie","porcií")}`, can:true};
+  }
+  return {key:"ok", label:"Dostupné", can:true};
+}
+const kindOf = (m) => (state.catById.get(m.category_id) || {}).kind || "main";
+const altOf = (m) => m.image_alt || (m.image && m.image.alt_text) || m.name;
+
+/* =====================================================================
+   RENDER – public view
+   ===================================================================== */
+function renderAll(){ renderWeekBar(); renderStrip(); renderDay(); }
+
+function renderWeekBar(){
+  const mon = state.weekStart, fri = addDays(mon, 4);
+  $("#weekTitle").textContent = `Týždeň ${isoWeek(mon)}`;
+  $("#weekRange").textContent = `${fmtShort(mon)} – ${fmtShort(fri)} ${parseISO(fri).getUTCFullYear()}`;
+  $("#btnThisWeek").hidden = mon === mondayOf(nowBA().date);
+}
+
+function renderStrip(){
+  const today = nowBA().date;
+  let html = "";
+  for (let i = 0; i < 5; i++){
+    const d = addDays(state.weekStart, i), dt = parseISO(d);
+    const mine = state.myOrders.some(o => o.menu_date === d && o.status === "active");
+    html += `<button class="day-tab ${d < today ? "past" : ""}" data-act="day" data-date="${d}" aria-current="${d === state.selected}" aria-label="${fmtFull(d)}${mine ? ", máte objednané" : ""}">
+      <span class="dn">${DAY_NAMES[i]}</span><span class="dd">${dt.getUTCDate()}</span><span class="dm">${MONTHS_GEN[dt.getUTCMonth()]}</span>
+      ${d === today ? '<span class="today-dot">dnes</span>' : ""}
+      ${mine ? `<span class="ord-dot" title="Máte objednané">${ICON.check}</span>` : ""}
+    </button>`;
+  }
+  $("#dayStrip").innerHTML = html;
+}
+
+function renderDay(){
+  const v = $("#dayView");
+  const d = state.selected;
+  if (state.loading){
+    v.innerHTML = `<div class="day-head"><div><h2>${fmtFull(d)}</h2><p class="sub">Načítavam jedálny lístok…</p></div></div><div class="grid" style="padding-top:26px">${'<div class="skeleton"></div>'.repeat(3)}</div>`;
+    return;
+  }
+  const meals = state.meals.filter(m => m.menu_date === d);
+  const info = state.days.get(d);
+  const open = orderWindowOpen(d);
+  const dl = open
+    ? `<span class="deadline">${ICON.clock}${d === nowBA().date ? `Objednávky dnes do ${deadline()}` : `Objednávky do ${deadline()} v deň výdaja`}</span>`
+    : `<span class="deadline closed">${ICON.clock}Objednávky uzavreté</span>`;
+  let html = `<div class="day-head"><div><h2>${DAY_NAMES[weekday(d)]}</h2><p class="sub">${fmtDay(d)} ${parseISO(d).getUTCFullYear()}</p></div>${meals.length ? dl : ""}
+    ${info && (info.headline || info.description) ? `<div class="day-intro">${ICON.info}<div>${info.headline ? `<strong>${esc(info.headline)}</strong>` : ""}${info.description ? `<p>${esc(info.description)}</p>` : ""}</div></div>` : ""}
+  </div>`;
+
+  if (!meals.length){
+    html += `<div class="empty"><h3>Menu na tento deň ešte nie je zverejnené</h3><p>Pozrite sa na iný deň alebo sa vráťte neskôr. Jedálny lístok pripravuje správca jedálne.</p></div>`;
+    v.innerHTML = html; return;
+  }
+  const groups = new Map();
+  for (const m of meals){ if (!groups.has(m.category_id)) groups.set(m.category_id, []); groups.get(m.category_id).push(m); }
+  const ordered = [...groups.keys()].sort((a, b) => ((state.catById.get(a)||{}).sort_order ?? 999) - ((state.catById.get(b)||{}).sort_order ?? 999));
+  for (const cid of ordered){
+    const cat = state.catById.get(cid) || {name:"Ostatné", kind:"main"};
+    const list = groups.get(cid);
+    html += `<section class="cat" aria-label="${esc(cat.name)}"><div class="cat-head"><span class="cat-swatch" style="background:${KIND_COLOR[cat.kind]}"></span><h3>${esc(cat.name)}</h3><span class="n">${list.length} ${plural(list.length,"jedlo","jedlá","jedál")}</span></div><div class="grid">${list.map(mealCard).join("")}</div></section>`;
+  }
+  v.innerHTML = html;
+}
+
+function mealCard(m){
+  const a = availability(m), st = state.stats.get(m.id), kind = kindOf(m), mine = myQtyFor(m.id);
+  const tags = [
+    m.is_vegan ? `<span class="tag vegan">${ICON.sprout}Vegánske</span>` : (m.is_vegetarian ? `<span class="tag veg">${ICON.leaf}Vegetariánske</span>` : ""),
+    mine ? `<span class="tag mine">${ICON.check}Objednané ${mine}×</span>` : ""
+  ].join("");
+  return `<article class="meal ${a.can ? "" : "is-off"}">
+    <button class="photo-btn" data-act="detail" data-id="${m.id}" aria-label="Zobraziť detail: ${esc(m.name)}">
+      ${imgHTML(m.image && m.image.storage_path, altOf(m), kind)}
+      <span class="photo-tags">${tags}</span>
+    </button>
+    <div class="meal-body">
+      <h4>${esc(m.name)}</h4>
+      ${m.description ? `<p class="meal-desc">${esc(m.description)}</p>` : ""}
+      <div class="facts">
+        ${m.weight ? `<span>Porcia <b>${esc(m.weight)}</b></span>` : ""}
+        <span>Alergény ${allergenChips(m.allergens)}</span>
+      </div>
+      <div>${starsHTML(st && st.avg_rating, st && st.rating_count)}</div>
+      <div class="meal-foot">
+        <div class="foot-left"><span class="price">${money(m.price)}</span><span class="avail ${a.key}">${a.label}</span></div>
+        <button class="btn btn-sm" data-act="order" data-id="${m.id}" ${a.can ? "" : "disabled"}>Objednať</button>
+      </div>
+    </div>
+  </article>`;
+}
+function allergenChips(list){
+  if (!list || !list.length) return `<b>bez alergénov</b>`;
+  return `<span class="alg">${list.map(n => `<span title="${esc(state.allergens.get(n) || "")}">${n}</span>`).join("")}</span>`;
+}
+
+/* ---------- detail ---------- */
+function showDetail(id){
+  const m = state.meals.find(x => x.id === id); if (!m) return;
+  const a = availability(m), st = state.stats.get(m.id), cat = state.catById.get(m.category_id) || {};
+  const d = $("#dlg-detail");
+  d.innerHTML = `<div class="detail">
+    <div class="detail-photo">${imgHTML(m.image && m.image.storage_path, altOf(m), kindOf(m))}</div>
+    <div class="detail-info">
+      <button class="icon-btn close-float" data-close aria-label="Zavrieť">${ICON.close}</button>
+      <div class="muted">${esc(cat.name || "")} · ${fmtFull(m.menu_date)}</div>
+      <h2>${esc(m.name)}</h2>
+      ${m.description ? `<p>${esc(m.description)}</p>` : ""}
+      <div class="facts">${m.weight ? `<span>Porcia <b>${esc(m.weight)}</b></span>` : ""}${m.is_vegan ? `<span class="tag vegan">${ICON.sprout}Vegánske</span>` : m.is_vegetarian ? `<span class="tag veg">${ICON.leaf}Vegetariánske</span>` : ""}</div>
+      <div><div class="lbl" style="font-weight:600;margin-bottom:6px">Alergény</div>
+        ${m.allergens && m.allergens.length ? `<ul class="alg-list">${m.allergens.map(n => `<li><span class="alg"><span>${n}</span></span>${esc(state.allergens.get(n) || "")}</li>`).join("")}</ul>` : `<p class="muted">Jedlo neobsahuje žiadne z hlavných alergénov.</p>`}
+      </div>
+      <div>${starsHTML(st && st.avg_rating, st && st.rating_count)}${st && st.ordered ? ` <span class="muted" style="font-size:.85rem">· objednané ${st.ordered}×</span>` : ""}</div>
+      <div class="meal-foot"><div class="foot-left"><span class="price">${money(m.price)}</span><span class="avail ${a.key}">${a.label}</span></div>
+        <button class="btn" data-act="order" data-id="${m.id}" ${a.can ? "" : "disabled"}>Objednať</button></div>
+    </div></div>`;
+  openDlg("dlg-detail");
+}
+
+/* ---------- order ---------- */
+function showOrder(id){
+  const m = state.meals.find(x => x.id === id); if (!m) return;
+  closeDlg("dlg-detail");
+  const a = availability(m);
+  const d = $("#dlg-order");
+  let qty = 1;
+  d.innerHTML = `<div class="dlg-head"><h2>Objednať obed</h2><button class="icon-btn" data-close aria-label="Zavrieť">${ICON.close}</button></div>
+  <form class="dlg-body" id="orderForm">
+    <div class="order-sum"><div class="thumb">${imgHTML(m.image && m.image.storage_path, altOf(m), kindOf(m))}</div>
+      <div><div style="font-weight:600">${esc(m.name)}</div><div class="muted" style="font-size:.9rem">${fmtFull(m.menu_date)} · ${esc(m.weight || "")}</div><div class="price" style="font-size:1.1rem">${money(m.price)}</div></div></div>
+    <div class="field"><label for="ordName">Meno a priezvisko</label><input class="input" id="ordName" required minlength="2" maxlength="80" autocomplete="name" value="${esc(store.get(LS_NAME, ""))}"><span class="hint">Podľa mena vám obed vydáme pri okienku.</span></div>
+    <div class="field"><span class="lbl">Počet porcií</span><div class="stepper"><button type="button" data-q="-1" aria-label="Menej">−</button><output id="ordQty">1</output><button type="button" data-q="1" aria-label="Viac">+</button></div></div>
+    <div class="field"><label for="ordNote">Poznámka (nepovinné)</label><input class="input" id="ordNote" maxlength="200" placeholder="Napr. bez omáčky"></div>
+    <p class="muted" style="font-size:.88rem">${a.key === "low" ? a.label + ". " : ""}Objednávku môžete zrušiť do ${deadline()} v deň výdaja.</p>
+    <div class="dlg-actions"><button type="button" class="btn btn-soft" data-close>Späť</button><button class="btn" id="ordSubmit">Potvrdiť objednávku</button></div>
+  </form>`;
+  d.querySelectorAll("[data-q]").forEach(b => b.onclick = () => { qty = Math.min(5, Math.max(1, qty + Number(b.dataset.q))); $("#ordQty").textContent = qty; });
+  $("#orderForm").onsubmit = async (e) => {
+    e.preventDefault();
+    const name = $("#ordName").value.trim();
+    if (name.length < 2){ toast("Zadajte svoje meno.", true); return; }
+    const btn = $("#ordSubmit"); btn.disabled = true; btn.textContent = "Odosielam…";
+    try {
+      const r = await rpc("place_order", {p_meal_id: m.id, p_customer_name: name, p_quantity: qty, p_note: $("#ordNote").value});
+      store.set(LS_NAME, name);
+      store.set(LS_TOKENS, [...store.get(LS_TOKENS, []), r.token]);
+      closeDlg("dlg-order");
+      toast(`Objednané: ${m.name}`);
+      await Promise.all([loadMyOrders(), refreshStats()]);
+      renderAll();
+    } catch (err) { toast(err.message, true); btn.disabled = false; btn.textContent = "Potvrdiť objednávku"; }
+  };
+  openDlg("dlg-order");
+  setTimeout(() => { const n = $("#ordName"); if (!n.value) n.focus(); }, 50);
+}
+async function refreshStats(){
+  try { const s = await rpc("meal_stats", {p_from: state.weekStart, p_to: addDays(state.weekStart, 6)}); state.stats = new Map(s.map(x => [x.meal_id, x])); } catch {}
+}
+
+/* ---------- my orders ---------- */
+function showMyOrders(){
+  const d = $("#dlg-orders");
+  const today = nowBA().date;
+  const list = state.myOrders;
+  const row = (o) => {
+    const canCancel = o.status === "active" && orderWindowOpen(o.menu_date);
+    const canRate = o.status === "active" && o.menu_date <= today;
+    return `<div class="mo ${o.status === "cancelled" ? "cancelled" : ""}">
+      <div class="thumb">${imgHTML(o.storage_path, o.meal_name, "main")}</div>
+      <div><h4>${esc(o.meal_name)}</h4>
+        <div class="meta">${fmtFull(o.menu_date)} · ${esc(o.category)} · ${o.quantity} ${plural(o.quantity,"porcia","porcie","porcií")}${o.status === "cancelled" ? " · zrušené" : ""}</div>
+        ${o.note ? `<div class="meta">Poznámka: ${esc(o.note)}</div>` : ""}
+        <div class="acts">
+          ${canCancel ? `<button class="btn btn-danger btn-sm" data-act="cancel" data-token="${o.token}">Zrušiť objednávku</button>` : ""}
+          ${canRate ? `<span class="stars" role="group" aria-label="Ohodnoťte jedlo">${[1,2,3,4,5].map(n => `<button class="${(o.rating||0) >= n ? "on" : ""}" data-act="rate" data-token="${o.token}" data-n="${n}" aria-label="${n} z 5">${ICON.star}</button>`).join("")}</span>` : ""}
+          ${!canRate && o.status === "active" ? `<span class="meta">Hodnotiť môžete v deň výdaja.</span>` : ""}
+        </div>
+      </div></div>`;
+  };
+  const upcoming = list.filter(o => o.menu_date >= today).sort((a,b) => a.menu_date.localeCompare(b.menu_date));
+  const past = list.filter(o => o.menu_date < today);
+  d.innerHTML = `<div class="dlg-head"><h2>Moje objednávky</h2><button class="icon-btn" data-close aria-label="Zavrieť">${ICON.close}</button></div>
+  <div class="dlg-body">
+    ${!list.length ? `<div class="empty" style="padding:30px 0"><h3>Zatiaľ nemáte objednávky</h3><p>Vyberte si jedlo v jedálnom lístku a kliknite na „Objednať“. Objednávky sa ukladajú v tomto prehliadači.</p></div>` : ""}
+    ${upcoming.length ? `<h3 style="font-size:1.15rem;margin-bottom:10px">Nadchádzajúce</h3><div class="mo-list">${upcoming.map(row).join("")}</div>` : ""}
+    ${past.length ? `<h3 style="font-size:1.15rem;margin:22px 0 10px">Predchádzajúce</h3><div class="mo-list">${past.map(row).join("")}</div>` : ""}
+  </div>`;
+  openDlg("dlg-orders");
+}
+
+function showAllergens(){
+  const d = $("#dlg-info");
+  d.innerHTML = `<div class="dlg-head"><h2>Zoznam alergénov</h2><button class="icon-btn" data-close aria-label="Zavrieť">${ICON.close}</button></div>
+  <div class="dlg-body"><ul class="alg-list">${[...state.allergens].map(([n, name]) => `<li><span class="alg"><span>${n}</span></span>${esc(name)}</li>`).join("")}</ul></div>`;
+  openDlg("dlg-info");
+}
+
+/* =====================================================================
+   ADMIN
+   ===================================================================== */
+const adm = {
+  password: sess.get(SS_ADMIN),
+  tab: "menu",
+  weekStart: null, date: null,
+  week: {meals:[], days:new Map(), stats:new Map()},
+  images: [], usage: new Map(),
+  missing: []
+};
+const A = (fn, args = {}) => rpc(fn, {p_password: adm.password, ...args});
+
+function showLogin(){
+  if (adm.password){ openAdmin(); return; }
+  const d = $("#dlg-login");
+  d.innerHTML = `<div class="dlg-head"><h2>Správa jedálne</h2><button class="icon-btn" data-close aria-label="Zavrieť">${ICON.close}</button></div>
+  <form class="dlg-body" id="loginForm">
+    <div class="field"><label for="admPass">Heslo správcu</label><input class="input" type="password" id="admPass" required autocomplete="current-password"><span class="hint">Predvolené heslo je v súbore setup.sql. Po prihlásení ho zmeňte.</span></div>
+    <div class="dlg-actions"><button class="btn" id="loginBtn">Prihlásiť</button></div>
+  </form>`;
+  $("#loginForm").onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = $("#loginBtn"); btn.disabled = true; btn.textContent = "Overujem…";
+    try {
+      const ok = await rpc("verify_admin", {p_password: $("#admPass").value});
+      if (!ok){ toast("Nesprávne heslo.", true); btn.disabled = false; btn.textContent = "Prihlásiť"; return; }
+      adm.password = $("#admPass").value; sess.set(SS_ADMIN, adm.password);
+      closeDlg("dlg-login"); openAdmin();
+    } catch (err) { toast(err.message, true); btn.disabled = false; btn.textContent = "Prihlásiť"; }
+  };
+  openDlg("dlg-login");
+  setTimeout(() => $("#admPass").focus(), 50);
+}
+
+async function openAdmin(){
+  adm.weekStart = adm.weekStart || state.weekStart;
+  adm.date = adm.date || state.selected;
+  const d = $("#dlg-admin");
+  d.innerHTML = `<div class="adm">
+    <div class="adm-top"><div class="wrap">
+      <div class="adm-top-in"><h2>Správa jedálne</h2><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" data-act="adm-logout">Odhlásiť</button><button class="btn btn-sm" data-act="adm-close">Zavrieť správu</button></div></div>
+      <div class="adm-tabs" role="tablist">
+        ${[["menu","Jedálny lístok"],["images","Obrázky"],["cats","Kategórie"],["orders","Objednávky"],["settings","Nastavenia"]].map(([k, l]) => `<button role="tab" data-act="adm-tab" data-tab="${k}" aria-selected="${adm.tab === k}">${l}</button>`).join("")}
+      </div>
+    </div></div>
+    <div class="wrap adm-main" id="admMain"></div>
+  </div>`;
+  openDlg("dlg-admin");
+  await admRender();
+}
+function admLogout(){ adm.password = null; sess.set(SS_ADMIN, null); closeDlg("dlg-admin"); toast("Boli ste odhlásený zo správy."); }
+function closeAdmin(){ closeDlg("dlg-admin"); }
+document.getElementById("dlg-admin").addEventListener("close", async () => { try { await loadBase(); } catch {} loadWeek(); });
+function admError(e){
+  if (/heslo/i.test(e.message)){ adm.password = null; sess.set(SS_ADMIN, null); closeDlg("dlg-admin"); }
+  toast(e.message, true);
+}
+
+async function admRender(){
+  document.querySelectorAll(".adm-tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === adm.tab));
+  const main = $("#admMain"); if (!main) return;
+  main.innerHTML = `<p class="muted">Načítavam…</p>`;
+  try {
+    if (adm.tab === "menu") await admMenu(main);
+    if (adm.tab === "images") await admImages(main);
+    if (adm.tab === "cats") admCats(main);
+    if (adm.tab === "orders") await admOrders(main);
+    if (adm.tab === "settings") admSettings(main);
+  } catch (e) { main.innerHTML = `<div class="panel"><p>${esc(e.message)}</p></div>`; }
+}
+
+async function loadImages(){
+  const [imgs, uses] = await Promise.all([
+    rest("images?select=*&order=created_at.desc"),
+    rest("meals?select=id,name,menu_date,image_id&image_id=not.is.null")
+  ]);
+  adm.images = imgs;
+  adm.usage = new Map();
+  for (const u of uses){ if (!adm.usage.has(u.image_id)) adm.usage.set(u.image_id, []); adm.usage.get(u.image_id).push(u); }
+}
+
+function weekNavHTML(start){
+  return `<button class="icon-btn" data-act="adm-week" data-dir="-1" aria-label="Predchádzajúci týždeň"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg></button>
+    <div><b>Týždeň ${isoWeek(start)}</b><div class="muted" style="font-size:.85rem">${fmtShort(start)} – ${fmtShort(addDays(start,4))} ${parseISO(start).getUTCFullYear()}</div></div>
+    <button class="icon-btn" data-act="adm-week" data-dir="1" aria-label="Nasledujúci týždeň"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></button>`;
+}
+
+/* ---- tab: menu ---- */
+async function admMenu(main){
+  if (adm.date < adm.weekStart || adm.date > addDays(adm.weekStart, 4)) adm.date = adm.weekStart;
+  const [w, missing] = await Promise.all([fetchWeek(adm.weekStart), rest("meals?select=id,name,description,category_id&image_id=is.null")]);
+  adm.week = w; adm.missing = missing;
+  const meals = w.meals.filter(m => m.menu_date === adm.date);
+  const info = w.days.get(adm.date) || {};
+  main.innerHTML = `
+    ${missing.length ? `<div class="callout"><p><b>${missing.length} ${plural(missing.length,"jedlo nemá","jedlá nemajú","jedál nemá")} fotku.</b> Aplikácia môže pre ne vytvoriť ukážkové fotky a uložiť ich do Supabase Storage. Neskôr ich môžete nahradiť vlastnými fotografiami.</p><button class="btn" data-act="adm-gen">Vytvoriť fotky</button><div class="progress" id="genProg" hidden style="width:100%"><i></i></div></div>` : ""}
+    <div class="toolbar">${weekNavHTML(adm.weekStart)}<span class="grow"></span><button class="btn btn-soft btn-sm" data-act="adm-copy">Skopírovať týždeň na nasledujúci</button></div>
+    <div class="adm-days">${[0,1,2,3,4].map(i => { const d = addDays(adm.weekStart, i); const n = w.meals.filter(m => m.menu_date === d).length; return `<button data-act="adm-day" data-date="${d}" aria-pressed="${d === adm.date}">${DAY_SHORT[i]} ${fmtShort(d)} <span class="muted">(${n})</span></button>`; }).join("")}</div>
+    <div class="panel"><h3>Popis obeda – ${fmtFull(adm.date)}</h3>
+      <form id="dayForm"><div class="field"><label for="dayHead">Nadpis dňa</label><input class="input" id="dayHead" maxlength="80" value="${esc(info.headline || "")}" placeholder="Napr. Domáca klasika"></div>
+      <div class="field"><label for="dayDesc">Popis obeda</label><textarea class="input" id="dayDesc" maxlength="400" placeholder="Krátko predstavte, čo sa v tento deň varí.">${esc(info.description || "")}</textarea></div>
+      <button class="btn btn-sm">Uložiť popis dňa</button></form>
+    </div>
+    <div class="panel"><div class="toolbar"><h3 class="grow" style="margin:0">Jedlá</h3><button class="btn btn-sm" data-act="adm-meal-new">Pridať jedlo</button></div>
+      ${meals.length ? meals.sort((a,b) => ((state.catById.get(a.category_id)||{}).sort_order||0) - ((state.catById.get(b.category_id)||{}).sort_order||0) || a.sort_order - b.sort_order).map(m => `<div class="adm-row">
+        <div class="thumb">${imgHTML(m.image && m.image.storage_path, m.name, kindOf(m))}</div>
+        <div><div class="t">${esc(m.name)}</div><div class="s">${esc((state.catById.get(m.category_id)||{}).name || "")} · ${esc(m.weight || "")} · ${money(m.price)} · ${m.is_available ? "dostupné" : "nedostupné"}${m.portions_limit != null ? ` · limit ${m.portions_limit}` : ""} · objednané ${(w.stats.get(m.id)||{}).ordered || 0}×</div></div>
+        <div class="a"><button class="btn btn-soft btn-sm" data-act="adm-toggle" data-id="${m.id}">${m.is_available ? "Označiť nedostupné" : "Označiť dostupné"}</button><button class="btn btn-soft btn-sm" data-act="adm-meal-edit" data-id="${m.id}">Upraviť</button><button class="btn btn-danger btn-sm" data-act="adm-meal-del" data-id="${m.id}">Vymazať</button></div>
+      </div>`).join("") : `<p class="muted">Na tento deň zatiaľ nie sú žiadne jedlá. Pridajte prvé jedlo tlačidlom vyššie.</p>`}
+    </div>`;
+  $("#dayForm").onsubmit = async (e) => {
+    e.preventDefault();
+    try { await A("admin_save_day", {p_date: adm.date, p_headline: $("#dayHead").value, p_description: $("#dayDesc").value}); toast("Popis dňa uložený."); }
+    catch (err) { admError(err); }
+  };
+}
+
+/* ---- meal editor ---- */
+const ed = {meal:null, imageId:null, imagePath:null, file:null, preview:null};
+async function openMealEditor(meal){
+  if (!adm.images.length) { try { await loadImages(); } catch {} }
+  const m = meal || {menu_date: adm.date, category_id: (state.categories[0]||{}).id, allergens:[], is_available:true, sort_order:100};
+  ed.meal = m; ed.imageId = m.image_id || null; ed.imagePath = m.image ? m.image.storage_path : null; ed.file = null;
+  if (ed.preview) URL.revokeObjectURL(ed.preview); ed.preview = null;
+  const d = $("#dlg-meal");
+  d.innerHTML = `<div class="dlg-head"><h2>${m.id ? "Upraviť jedlo" : "Nové jedlo"}</h2><button class="icon-btn" data-close aria-label="Zavrieť">${ICON.close}</button></div>
+  <form class="dlg-body" id="mealForm"><div class="editor">
+    <div>
+      <div class="lbl" style="font-weight:600;margin-bottom:8px">Fotka jedla</div>
+      <div class="preview" id="edPreview"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0">
+        <label class="btn btn-soft btn-sm" style="cursor:pointer">Nahrať novú<input type="file" accept="image/jpeg,image/png,image/webp" id="edFile" hidden></label>
+        <button type="button" class="btn btn-soft btn-sm" data-act="ed-pick">Vybrať z knižnice</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-act="ed-clear">Odobrať</button>
+      </div>
+      <div class="field"><label for="edAlt">Popis fotky pre nevidiacich</label><input class="input" id="edAlt" maxlength="160" value="${esc(m.image_alt || "")}" placeholder="Napr. Tanier s kuracím mäsom a ryžou"></div>
+      <p class="hint muted" style="font-size:.8rem">Fotka sa zobrazí v pomere 4 : 3. Veľké fotky sa pred nahratím automaticky zmenšia.</p>
+    </div>
+    <div>
+      <div class="field"><label for="edName">Názov jedla</label><input class="input" id="edName" required maxlength="120" value="${esc(m.name || "")}"></div>
+      <div class="field"><label for="edDesc">Popis</label><textarea class="input" id="edDesc" maxlength="400">${esc(m.description || "")}</textarea></div>
+      <div class="row">
+        <div class="field"><label for="edDate">Dátum</label><input class="input" type="date" id="edDate" required value="${esc(m.menu_date)}"></div>
+        <div class="field"><label for="edCat">Kategória</label><select class="input" id="edCat">${state.categories.map(c => `<option value="${c.id}" ${c.id === m.category_id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="edWeight">Hmotnosť porcie</label><input class="input" id="edWeight" maxlength="40" value="${esc(m.weight || "")}" placeholder="150 g / 0,33 l"></div>
+        <div class="field"><label for="edPrice">Cena (€)</label><input class="input" type="number" step="0.01" min="0" id="edPrice" value="${m.price ?? ""}"></div>
+        <div class="field"><label for="edLimit">Počet porcií</label><input class="input" type="number" min="0" id="edLimit" value="${m.portions_limit ?? ""}" placeholder="bez limitu"></div>
+        <div class="field"><label for="edSort">Poradie</label><input class="input" type="number" id="edSort" value="${m.sort_order ?? 100}"></div>
+      </div>
+      <div class="field" style="flex-direction:row;flex-wrap:wrap;gap:8px 20px">
+        <label class="check"><input type="checkbox" id="edAvail" ${m.is_available !== false ? "checked" : ""}> Dostupné na objednanie</label>
+        <label class="check"><input type="checkbox" id="edVeg" ${m.is_vegetarian ? "checked" : ""}> Vegetariánske</label>
+        <label class="check"><input type="checkbox" id="edVegan" ${m.is_vegan ? "checked" : ""}> Vegánske</label>
+      </div>
+      <div class="field"><span class="lbl">Alergény</span><div class="alg-pick">${[...state.allergens].map(([n, name]) => `<label class="check"><input type="checkbox" name="alg" value="${n}" ${(m.allergens||[]).includes(n) ? "checked" : ""}> ${n} – ${esc(name)}</label>`).join("")}</div></div>
+    </div>
+  </div>
+  <div class="dlg-actions"><button type="button" class="btn btn-soft" data-close>Zrušiť</button><button class="btn" id="edSave">Uložiť jedlo</button></div>
+  </form>`;
+  renderEdPreview();
+  $("#edFile").onchange = (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    if (!/^image\//.test(f.type)){ toast("Vyberte obrázok (JPG, PNG alebo WebP).", true); return; }
+    ed.file = f; if (ed.preview) URL.revokeObjectURL(ed.preview); ed.preview = URL.createObjectURL(f);
+    renderEdPreview();
+    if (!$("#edAlt").value) $("#edAlt").value = $("#edName").value;
+  };
+  $("#edVegan").onchange = (e) => { if (e.target.checked) $("#edVeg").checked = true; };
+  $("#mealForm").onsubmit = saveMeal;
+  openDlg("dlg-meal");
+}
+function renderEdPreview(){
+  const box = $("#edPreview"); if (!box) return;
+  if (ed.preview) box.innerHTML = `<img src="${ed.preview}" alt="Náhľad"><span class="tag badge">Náhľad – uloží sa po kliknutí na Uložiť</span>`;
+  else if (ed.imagePath){
+    const n = (adm.usage.get(ed.imageId) || []).filter(u => u.id !== ed.meal.id).length;
+    box.innerHTML = `<img src="${esc(publicUrl(ed.imagePath))}" alt="" onerror="imgFail(this)">${n ? `<span class="tag badge">Zdieľaná s ${n} ${plural(n,"jedlom","jedlami","jedlami")}</span>` : ""}`;
+  }
+  else box.innerHTML = `<div class="ph">${PH_ICON[(state.catById.get(ed.meal.category_id)||{}).kind] || PH_ICON.main}</div><span class="tag badge">Bez fotky</span>`;
+}
+async function saveMeal(e){
+  e.preventDefault();
+  const btn = $("#edSave"); btn.disabled = true; btn.textContent = "Ukladám…";
+  try {
+    let imageId = ed.imageId;
+    if (ed.file){
+      btn.textContent = "Nahrávam fotku…";
+      const blob = await resizeImage(ed.file, 1600);
+      imageId = await registerUpload(blob, $("#edName").value.trim(), $("#edAlt").value.trim());
+    }
+    const payload = {
+      id: ed.meal.id || "", menu_date: $("#edDate").value, category_id: $("#edCat").value,
+      name: $("#edName").value, description: $("#edDesc").value, weight: $("#edWeight").value,
+      price: $("#edPrice").value, portions_limit: $("#edLimit").value, sort_order: $("#edSort").value,
+      is_available: $("#edAvail").checked, is_vegetarian: $("#edVeg").checked, is_vegan: $("#edVegan").checked,
+      allergens: [...document.querySelectorAll('#mealForm input[name="alg"]:checked')].map(i => i.value),
+      image_id: imageId || "", image_alt: $("#edAlt").value
+    };
+    await A("admin_save_meal", {p_meal: payload});
+    closeDlg("dlg-meal");
+    toast("Jedlo uložené.");
+    await loadImages(); await admRender();
+  } catch (err) { btn.disabled = false; btn.textContent = "Uložiť jedlo"; admError(err); }
+}
+async function registerUpload(blob, title, alt){
+  const ext = blob.type === "image/png" ? "png" : blob.type === "image/jpeg" ? "jpg" : "webp";
+  const path = `meals/${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  await uploadToStorage(path, blob);
+  try { return await A("admin_register_image", {p_storage_path: path, p_title: title, p_alt_text: alt}); }
+  catch (err) { try { await deleteFromStorage(path); } catch {} throw err; }
+}
+function resizeImage(file, max){
+  return new Promise((resolve, reject) => {
+    const img = new Image(); const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const s = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob(b => b ? resolve(b) : reject(new Error("Obrázok sa nepodarilo spracovať.")), "image/webp", 0.86);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Súbor nie je platný obrázok.")); };
+    img.src = url;
+  });
+}
+
+/* ---- image picker (library) ---- */
+async function openPicker(){
+  try { await loadImages(); } catch (err) { admError(err); return; }
+  const d = $("#dlg-picker");
+  d.innerHTML = `<div class="dlg-head"><h2>Knižnica obrázkov</h2><button class="icon-btn" data-close aria-label="Zavrieť">${ICON.close}</button></div>
+  <div class="dlg-body">${adm.images.length ? `<div class="img-grid">${adm.images.map(i => {
+    const uses = (adm.usage.get(i.id) || []).filter(u => u.id !== ed.meal.id);
+    return `<button type="button" class="img-card ${i.id === ed.imageId ? "sel" : ""}" data-act="pick" data-id="${i.id}"><div class="pic">${imgHTML(i.storage_path, i.alt_text, "main")}</div><div class="cap"><b>${esc(i.title || "Bez názvu")}</b><span class="u">${uses.length ? `Používa ${uses.length} ${plural(uses.length,"jedlo","jedlá","jedál")}` : "Nepoužitý"}</span></div></button>`;
+  }).join("")}</div>` : `<p class="muted">Knižnica je zatiaľ prázdna. Nahrajte fotku cez „Nahrať novú“ alebo v záložke Obrázky.</p>`}</div>`;
+  openDlg("dlg-picker");
+}
+async function pickImage(id){
+  const img = adm.images.find(i => i.id === id); if (!img) return;
+  const uses = (adm.usage.get(id) || []).filter(u => u.id !== ed.meal.id);
+  if (uses.length){
+    const names = uses.slice(0, 3).map(u => u.name).join(", ") + (uses.length > 3 ? " a ďalšie" : "");
+    const ok = await askConfirm(`Tento obrázok už používa: ${names}. Chcete ho zdieľať aj s týmto jedlom?`, "Áno, zdieľať");
+    if (!ok) return;
+  }
+  ed.imageId = img.id; ed.imagePath = img.storage_path; ed.file = null;
+  if (ed.preview) URL.revokeObjectURL(ed.preview); ed.preview = null;
+  if (!$("#edAlt").value && img.alt_text) $("#edAlt").value = img.alt_text;
+  closeDlg("dlg-picker"); renderEdPreview();
+}
+
+/* ---- tab: images ---- */
+let libFile = null, libPreview = null;
+async function admImages(main){
+  await loadImages();
+  const unused = adm.images.filter(i => !adm.usage.has(i.id)).length;
+  main.innerHTML = `
+  <div class="panel"><h3>Nahrať novú fotku do knižnice</h3>
+    <form id="libForm" class="editor">
+      <div class="preview" id="libPrev"><div class="ph">${PH_ICON.main}</div><span class="tag badge">Náhľad</span></div>
+      <div>
+        <div class="field"><label for="libFile">Súbor</label><input class="input" type="file" id="libFile" accept="image/jpeg,image/png,image/webp" required></div>
+        <div class="field"><label for="libTitle">Názov</label><input class="input" id="libTitle" maxlength="120" placeholder="Napr. Kuracie prsia s ryžou"></div>
+        <div class="field"><label for="libAlt">Popis fotky pre nevidiacich</label><input class="input" id="libAlt" maxlength="160"></div>
+        <button class="btn" id="libSave">Nahrať do knižnice</button>
+      </div>
+    </form>
+  </div>
+  <div class="panel"><div class="toolbar"><h3 class="grow" style="margin:0">Knižnica (${adm.images.length})</h3><span class="muted">${unused} ${plural(unused,"nepoužitý","nepoužité","nepoužitých")}</span></div>
+    ${adm.images.length ? `<div class="img-grid">${adm.images.map(i => { const u = adm.usage.get(i.id) || []; return `<div class="img-card"><div class="pic">${imgHTML(i.storage_path, i.alt_text, "main")}</div><div class="cap"><b>${esc(i.title || "Bez názvu")}</b><span class="u">${u.length ? `Používa ${u.length} ${plural(u.length,"jedlo","jedlá","jedál")}` : "Nepoužitý"}</span><div class="a"><button class="btn btn-soft btn-sm" data-act="img-edit" data-id="${i.id}">Upraviť</button><button class="btn btn-danger btn-sm" data-act="img-del" data-id="${i.id}">Odstrániť</button></div></div></div>`; }).join("")}</div>` : `<p class="muted">Zatiaľ žiadne obrázky.</p>`}
+  </div>`;
+  $("#libFile").onchange = (e) => {
+    libFile = e.target.files[0] || null;
+    if (libPreview) URL.revokeObjectURL(libPreview);
+    libPreview = libFile ? URL.createObjectURL(libFile) : null;
+    $("#libPrev").innerHTML = libPreview ? `<img src="${libPreview}" alt="Náhľad"><span class="tag badge">Náhľad</span>` : `<div class="ph">${PH_ICON.main}</div>`;
+    if (libFile && !$("#libTitle").value) $("#libTitle").value = libFile.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ");
+  };
+  $("#libForm").onsubmit = async (e) => {
+    e.preventDefault(); if (!libFile) return;
+    const btn = $("#libSave"); btn.disabled = true; btn.textContent = "Nahrávam…";
+    try {
+      const blob = await resizeImage(libFile, 1600);
+      await registerUpload(blob, $("#libTitle").value, $("#libAlt").value);
+      libFile = null; toast("Fotka nahratá do knižnice."); await admRender();
+    } catch (err) { btn.disabled = false; btn.textContent = "Nahrať do knižnice"; admError(err); }
+  };
+}
+async function editImage(id){
+  const i = adm.images.find(x => x.id === id); if (!i) return;
+  const d = $("#dlg-info");
+  d.innerHTML = `<div class="dlg-head"><h2>Upraviť obrázok</h2><button class="icon-btn" data-close aria-label="Zavrieť">${ICON.close}</button></div>
+  <form class="dlg-body" id="imgForm"><div class="preview" style="margin-bottom:14px">${imgHTML(i.storage_path, i.alt_text, "main")}</div>
+    <div class="field"><label for="imgTitle">Názov</label><input class="input" id="imgTitle" value="${esc(i.title || "")}"></div>
+    <div class="field"><label for="imgAlt">Popis fotky pre nevidiacich</label><input class="input" id="imgAlt" value="${esc(i.alt_text || "")}"></div>
+    ${(adm.usage.get(i.id)||[]).length ? `<p class="muted" style="font-size:.88rem">Používajú ho: ${(adm.usage.get(i.id)).map(u => esc(u.name) + " (" + fmtShort(u.menu_date) + ")").join(", ")}</p>` : ""}
+    <div class="dlg-actions"><button type="button" class="btn btn-soft" data-close>Zrušiť</button><button class="btn">Uložiť zmeny</button></div></form>`;
+  $("#imgForm").onsubmit = async (e) => {
+    e.preventDefault();
+    try { await A("admin_update_image", {p_id: id, p_title: $("#imgTitle").value, p_alt_text: $("#imgAlt").value}); closeDlg("dlg-info"); toast("Obrázok upravený."); await admRender(); }
+    catch (err) { admError(err); }
+  };
+  openDlg("dlg-info");
+}
+async function deleteImage(id){
+  const u = adm.usage.get(id) || [];
+  const msg = u.length
+    ? `Tento obrázok používa ${u.length} ${plural(u.length,"jedlo","jedlá","jedál")}. Po odstránení sa pri nich zobrazí náhradná ikona. Naozaj odstrániť?`
+    : "Odstrániť obrázok z knižnice aj z úložiska?";
+  if (!await askConfirm(msg, "Odstrániť", true)) return;
+  try {
+    const path = await A("admin_delete_image", {p_id: id, p_force: true});
+    if (path){ try { await deleteFromStorage(path); } catch (e) { console.warn("Súbor zostal v úložisku:", e); } }
+    toast("Obrázok odstránený."); await admRender();
+  } catch (err) { admError(err); }
+}
+
+/* ---- tab: categories ---- */
+function admCats(main){
+  const kinds = Object.entries(KIND_LABEL);
+  const row = (c) => `<tr data-id="${c ? c.id : ""}">
+    <td><input class="input" name="name" value="${esc(c ? c.name : "")}" placeholder="Napr. Menu D" aria-label="Názov"></td>
+    <td><select class="input" name="kind" aria-label="Typ">${kinds.map(([k, l]) => `<option value="${k}" ${c && c.kind === k ? "selected" : ""}>${l}</option>`).join("")}</select></td>
+    <td style="width:110px"><input class="input" type="number" name="sort" value="${c ? c.sort_order : 100}" aria-label="Poradie"></td>
+    <td style="white-space:nowrap"><button class="btn btn-sm" data-act="cat-save">${c ? "Uložiť" : "Pridať"}</button> ${c ? `<button class="btn btn-danger btn-sm" data-act="cat-del">Vymazať</button>` : ""}</td></tr>`;
+  main.innerHTML = `<div class="panel"><h3>Kategórie a typy menu</h3>
+    <p class="muted" style="margin-bottom:14px;max-width:70ch">Kategórie sa zobrazujú v jedálnom lístku v poradí podľa čísla „Poradie“. Typ určuje farbu a náhradnú ikonu, keď jedlo nemá fotku. Môžete pridať ľubovoľný počet kategórií.</p>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Názov</th><th>Typ</th><th>Poradie</th><th></th></tr></thead>
+    <tbody>${state.categories.map(row).join("")}${row(null)}</tbody></table></div></div>`;
+}
+async function saveCat(btn){
+  const tr = btn.closest("tr");
+  const id = tr.dataset.id || null;
+  try {
+    await A("admin_save_category", {p_id: id, p_name: tr.querySelector('[name="name"]').value, p_kind: tr.querySelector('[name="kind"]').value, p_sort_order: Number(tr.querySelector('[name="sort"]').value) || 100});
+    await loadBase(); toast(id ? "Kategória uložená." : "Kategória pridaná."); admRender();
+  } catch (err) { admError(err); }
+}
+async function delCat(btn){
+  const id = btn.closest("tr").dataset.id;
+  if (!await askConfirm("Vymazať kategóriu?", "Vymazať", true)) return;
+  try { await A("admin_delete_category", {p_id: id}); await loadBase(); toast("Kategória vymazaná."); admRender(); }
+  catch (err) { admError(err); }
+}
+
+/* ---- tab: orders ---- */
+async function admOrders(main){
+  const from = adm.weekStart, to = addDays(from, 6);
+  const rows = await A("admin_orders", {p_from: from, p_to: to});
+  const active = rows.filter(r => r.status === "active");
+  let html = `<div class="toolbar">${weekNavHTML(from)}<span class="grow"></span><button class="btn btn-soft btn-sm" data-act="adm-print">Vytlačiť</button></div>`;
+  html += `<div class="panel"><h3>Súhrn porcií</h3>`;
+  for (let i = 0; i < 5; i++){
+    const d = addDays(from, i);
+    const dayRows = active.filter(r => r.menu_date === d);
+    const byMeal = new Map();
+    dayRows.forEach(r => { const k = r.category + "|" + r.meal_name; byMeal.set(k, (byMeal.get(k) || 0) + r.quantity); });
+    html += `<h4 style="margin:16px 0 8px;font-family:var(--font-d);font-weight:400;font-size:1.1rem">${fmtFull(d)} <span class="muted" style="font-family:var(--font-b);font-size:.9rem">– ${dayRows.reduce((s, r) => s + r.quantity, 0)} porcií</span></h4>`;
+    html += byMeal.size ? `<div class="sum-grid">${[...byMeal].map(([k, n]) => { const [c, name] = k.split("|"); return `<div class="sum"><div class="big">${n}</div><div style="font-weight:600">${esc(name)}</div><div class="muted" style="font-size:.85rem">${esc(c)}</div></div>`; }).join("")}</div>` : `<p class="muted">Bez objednávok.</p>`;
+  }
+  html += `</div><div class="panel"><h3>Zoznam objednávok</h3>${rows.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Deň</th><th>Meno</th><th>Jedlo</th><th>Porcie</th><th>Poznámka</th><th>Stav</th><th>Hodnotenie</th></tr></thead><tbody>${rows.map(r => `<tr><td>${DAY_SHORT[weekday(r.menu_date)]} ${fmtShort(r.menu_date)}</td><td>${esc(r.customer_name)}</td><td>${esc(r.meal_name)}<div class="muted" style="font-size:.8rem">${esc(r.category)}</div></td><td>${r.quantity}</td><td>${esc(r.note || "")}</td><td>${r.status === "active" ? "aktívna" : "zrušená"}</td><td>${r.rating ? "★".repeat(r.rating) : ""}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">V tomto týždni zatiaľ nikto neobjednal.</p>`}</div>`;
+  main.innerHTML = html;
+}
+
+/* ---- tab: settings ---- */
+function admSettings(main){
+  main.innerHTML = `<div class="panel"><h3>Jedáleň</h3><form id="cfgForm" style="max-width:520px">
+    <div class="field"><label for="cfgName">Názov jedálne</label><input class="input" id="cfgName" required value="${esc(state.config.canteen_name)}"></div>
+    <div class="field"><label for="cfgDl">Uzávierka objednávok v deň výdaja</label><input class="input" type="time" id="cfgDl" value="${deadline()}"><span class="hint">Po tomto čase (časové pásmo Europe/Bratislava) už nie je možné objednať ani zrušiť obed na daný deň.</span></div>
+    <button class="btn btn-sm">Uložiť nastavenia</button></form></div>
+  <div class="panel"><h3>Zmena hesla správcu</h3><form id="pwForm" style="max-width:520px">
+    <div class="field"><label for="pwNew">Nové heslo</label><input class="input" type="password" id="pwNew" minlength="8" required autocomplete="new-password"><span class="hint">Aspoň 8 znakov. Odporúčame dlhšiu frázu, napríklad tri slová.</span></div>
+    <div class="field"><label for="pwNew2">Zopakujte nové heslo</label><input class="input" type="password" id="pwNew2" minlength="8" required autocomplete="new-password"></div>
+    <button class="btn btn-sm">Zmeniť heslo</button></form></div>`;
+  $("#cfgForm").onsubmit = async (e) => {
+    e.preventDefault();
+    try { await A("admin_update_config", {p_canteen_name: $("#cfgName").value, p_order_deadline: $("#cfgDl").value}); await loadBase(); toast("Nastavenia uložené."); }
+    catch (err) { admError(err); }
+  };
+  $("#pwForm").onsubmit = async (e) => {
+    e.preventDefault();
+    if ($("#pwNew").value !== $("#pwNew2").value){ toast("Heslá sa nezhodujú.", true); return; }
+    try { await A("admin_change_password", {p_new_password: $("#pwNew").value}); adm.password = $("#pwNew").value; sess.set(SS_ADMIN, adm.password); e.target.reset(); toast("Heslo zmenené."); }
+    catch (err) { admError(err); }
+  };
+}
+
+/* =====================================================================
+   SAMPLE PHOTO GENERATOR
+   Kreslí ilustračné fotky jedál a nahrá ich do Supabase Storage.
+   ===================================================================== */
+function hashStr(s){ let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function mulberry(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+function dishProfile(text, kind){
+  const t = text.toLowerCase(); const has = (...w) => w.some(x => t.includes(x));
+  if (kind === "soup" || has("polievk", "vývar", "minestrone", "krém s")){
+    let c = "#E3B458";
+    if (has("paradaj")) c = "#C9452E"; else if (has("brokol", "hrášk", "špenát")) c = "#86AA45"; else if (has("guláš", "fazu")) c = "#8E4424";
+    else if (has("šošov")) c = "#B8652C"; else if (has("tekvic", "mrkv")) c = "#E2852B"; else if (has("minestrone")) c = "#C76A3C"; else if (has("vývar")) c = "#E1AE48";
+    return {type:"soup", color:c, noodles: has("rezanc", "minestrone"), cream: has("krém", "smotan", "paradaj", "hrášk", "tekvic"), chunks: has("guláš", "fazu", "minestrone"), croutons: has("krutón"), seeds: has("semien")};
+  }
+  if (has("štrúd", "koláč")) return {type:"strudel"};
+  if (has("palacin")) return {type:"crepe"};
+  if (has("ovocn")) return {type:"fruit"};
+  if (has("hranolk") && kind === "side") return {type:"bowl", fill:"fries"};
+  if (has("šalát") && kind === "side") return {type:"bowl", fill: has("uhork") ? "cucumber" : "salad"};
+  const p = {type:"plate"};
+  if (has("halušk")) p.one = "halusky";
+  else if (has("rizot")) p.one = "risotto";
+  else if (has("špaget", "bolon")) p.one = "spaghetti";
+  else if (has("penne", "cestovin")) p.one = "penne";
+  else if (has("plack")) p.one = "pancakes";
+  else if (has("burger")) p.protein = "burger";
+  if (!p.one){
+    if (has("rezeň", "vyprážan", "v cestíčku")) p.protein = has("syr") ? "cheese" : has("ryb", "tresk") ? "fishfried" : "schnitzel";
+    else if (has("losos", "ryb")) p.protein = "salmon";
+    else if (has("tofu")) p.protein = "tofu";
+    else if (has("cícer", "šošov", "zeleninové kari")) p.protein = "curryveg";
+    else if (has("kari", "sladkokys", "soté")) p.protein = "curry";
+    else if (has("guláš")) p.protein = "goulash";
+    else if (has("sviečk")) p.protein = "svieckova";
+    else if (has("stehno")) p.protein = "leg";
+    else if (has("karé", "bravč", "hovädz")) p.protein = "roast";
+    else if (has("kurac", "morč", "kura")) p.protein = "chicken";
+    else if (has("pečená zelenina", "quino")) p.protein = "roastveg";
+    if (has("ryž")) p.side = "rice"; else if (has("knedľ")) p.side = "dumplings"; else if (has("hranolk")) p.side = "fries";
+    else if (has("pyré", "kaša")) p.side = "mash"; else if (has("zemiakový šalát")) p.side = "potsalad"; else if (has("zemiak")) p.side = "potatoes";
+    else if (has("quino")) p.side = "quinoa"; else if (has("rezanc")) p.side = "noodles";
+    if (has("kapust")) p.extra = "cabbage"; else if (has("hrášk")) p.extra = "peas"; else if (has("brusnic")) p.extra = "cranberry"; else if (has("šalát", "zelenin")) p.extra = "greens";
+    if (has("citrón")) p.lemon = true;
+  }
+  return p;
+}
+
+function drawDish(meal, kind){
+  const W = 1200, H = 900;
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  const r = mulberry(hashStr(meal.id || meal.name));
+  const R = (a, b) => a + r() * (b - a);
+  const prof = dishProfile(`${meal.name} ${meal.description || ""}`, kind);
+
+  // tabletop
+  const tables = [["#7B5A3B","#5A3F28","wood"],["#3F4B46","#2B3531","stone"],["#CDBB9E","#B19D7F","linen"],["#8C6A4A","#6B4E35","wood"]];
+  const [t1, t2, tt] = tables[Math.floor(r() * tables.length)];
+  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, t1); g.addColorStop(1, t2);
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  if (tt === "wood"){ x.globalAlpha = .12; for (let i = 0; i < 60; i++){ x.strokeStyle = r() > .5 ? "#000" : "#fff"; x.lineWidth = R(1, 4); x.beginPath(); const y = R(0, H); x.moveTo(0, y); x.bezierCurveTo(W*.3, y + R(-30,30), W*.7, y + R(-30,30), W, y + R(-20,20)); x.stroke(); } x.globalAlpha = 1; }
+  else { x.globalAlpha = .07; for (let i = 0; i < 2500; i++){ x.fillStyle = r() > .5 ? "#000" : "#fff"; x.fillRect(R(0,W), R(0,H), 2, 2); } x.globalAlpha = 1; }
+  // light vignette
+  const v = x.createRadialGradient(W*.45, H*.4, 100, W/2, H/2, W*.75); v.addColorStop(0, "rgba(255,255,255,.12)"); v.addColorStop(1, "rgba(0,0,0,.35)");
+  x.fillStyle = v; x.fillRect(0, 0, W, H);
+  // napkin
+  x.save(); x.translate(W*.86, H*.78); x.rotate(R(-.5, -.2)); x.shadowColor = "rgba(0,0,0,.25)"; x.shadowBlur = 20;
+  x.fillStyle = ["#DDE7D6","#F0E3C8","#E7D3CF","#D6E0E8"][Math.floor(r()*4)]; x.fillRect(-170, -120, 340, 240);
+  x.shadowBlur = 0; x.strokeStyle = "rgba(0,0,0,.08)"; x.lineWidth = 3; for (let i = -150; i < 170; i += 28){ x.beginPath(); x.moveTo(i, -120); x.lineTo(i, 120); x.stroke(); }
+  x.restore();
+
+  const cx = W*.47, cy = H*.5;
+  const blob = (bx, by, rx, ry, rot, fill, j = .12, n = 14) => {
+    const pts = []; for (let i = 0; i < n; i++){ const a = i / n * Math.PI * 2; const k = 1 + (r() - .5) * 2 * j; pts.push([Math.cos(a)*rx*k, Math.sin(a)*ry*k]); }
+    x.save(); x.translate(bx, by); x.rotate(rot); x.beginPath();
+    x.moveTo((pts[0][0]+pts[1][0])/2, (pts[0][1]+pts[1][1])/2);
+    for (let i = 1; i <= n; i++){ const p = pts[i % n], q = pts[(i+1) % n]; x.quadraticCurveTo(p[0], p[1], (p[0]+q[0])/2, (p[1]+q[1])/2); }
+    x.closePath(); x.restore();
+    x.fillStyle = fill; x.fill();
+  };
+  const shade = (bx, by, rad, c1, c2) => { const gr = x.createRadialGradient(bx - rad*.3, by - rad*.35, rad*.1, bx, by, rad*1.1); gr.addColorStop(0, c1); gr.addColorStop(1, c2); return gr; };
+  const leaf = (lx, ly, s, col = "#4E8A2E") => { x.save(); x.translate(lx, ly); x.rotate(R(0, 6.28)); x.fillStyle = col; x.beginPath(); x.ellipse(0, 0, s, s*.45, 0, 0, 6.28); x.fill(); x.strokeStyle = "rgba(255,255,255,.35)"; x.lineWidth = 1.5; x.beginPath(); x.moveTo(-s*.8, 0); x.lineTo(s*.8, 0); x.stroke(); x.restore(); };
+  const herbs = (hx, hy, spread, n = 10) => { for (let i = 0; i < n; i++) leaf(hx + R(-spread, spread), hy + R(-spread, spread), R(7, 13), r() > .5 ? "#4E8A2E" : "#6BA33A"); };
+
+  const plate = (pr, deep = false) => {
+    x.save(); x.shadowColor = "rgba(0,0,0,.45)"; x.shadowBlur = 50; x.shadowOffsetY = 22;
+    x.fillStyle = "#F4F2EC"; x.beginPath(); x.arc(cx, cy, pr, 0, 6.28); x.fill(); x.restore();
+    const rim = x.createRadialGradient(cx - pr*.3, cy - pr*.3, pr*.2, cx, cy, pr); rim.addColorStop(0, "#FFFFFF"); rim.addColorStop(1, "#DCD8CF");
+    x.fillStyle = rim; x.beginPath(); x.arc(cx, cy, pr, 0, 6.28); x.fill();
+    const inner = x.createRadialGradient(cx, cy - pr*.2, pr*.1, cx, cy, pr*(deep ? .8 : .74)); inner.addColorStop(0, "#FBFAF7"); inner.addColorStop(1, deep ? "#D8D3C8" : "#E9E5DD");
+    x.fillStyle = inner; x.beginPath(); x.arc(cx, cy, pr*(deep ? .8 : .74), 0, 6.28); x.fill();
+  };
+  const cutlery = () => {
+    x.save(); x.fillStyle = "#C9CDD1"; x.shadowColor = "rgba(0,0,0,.35)"; x.shadowBlur = 12; x.shadowOffsetY = 6;
+    const fx = cx - 400; x.fillRect(fx - 6, cy - 220, 12, 440); for (let i = -2; i <= 1; i++) x.fillRect(fx + i*12 - 2, cy - 300, 6, 90); x.fillRect(fx - 24, cy - 222, 48, 16);
+    const kx = cx + 400; x.beginPath(); x.moveTo(kx - 8, cy + 230); x.lineTo(kx - 8, cy - 300); x.quadraticCurveTo(kx + 26, cy - 250, kx + 12, cy - 40); x.lineTo(kx + 8, cy + 230); x.closePath(); x.fill();
+    x.restore();
+  };
+
+  if (prof.type === "soup"){
+    plate(310); // saucer
+    // bowl
+    x.save(); x.shadowColor = "rgba(0,0,0,.35)"; x.shadowBlur = 30; x.shadowOffsetY = 12;
+    x.fillStyle = "#EFEBE3"; x.beginPath(); x.arc(cx, cy, 245, 0, 6.28); x.fill(); x.restore();
+    const lip = x.createRadialGradient(cx - 80, cy - 90, 20, cx, cy, 245); lip.addColorStop(0, "#FFFFFF"); lip.addColorStop(1, "#CFC9BE");
+    x.fillStyle = lip; x.beginPath(); x.arc(cx, cy, 245, 0, 6.28); x.fill();
+    const sg = x.createRadialGradient(cx - 50, cy - 60, 20, cx, cy, 205); sg.addColorStop(0, prof.color); sg.addColorStop(1, shadeHex(prof.color, -0.28));
+    x.fillStyle = sg; x.beginPath(); x.arc(cx, cy, 205, 0, 6.28); x.fill();
+    if (prof.chunks){ for (let i = 0; i < 26; i++){ const a = R(0, 6.28), d = R(0, 160); blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(10, 20), R(8, 15), R(0, 3), ["#7A3A1E","#E9C46A","#D8763A","#F1E3B5"][Math.floor(r()*4)], .25, 8); } }
+    if (prof.noodles){ x.strokeStyle = "#F6E2A6"; x.lineWidth = 6; x.lineCap = "round"; for (let i = 0; i < 22; i++){ const a = R(0, 6.28), d = R(0, 150); const px = cx + Math.cos(a)*d, py = cy + Math.sin(a)*d; x.beginPath(); x.moveTo(px, py); x.quadraticCurveTo(px + R(-40,40), py + R(-40,40), px + R(-50,50), py + R(-50,50)); x.stroke(); } for (let i = 0; i < 14; i++){ const a = R(0, 6.28), d = R(0, 150); x.fillStyle = "#E8742A"; x.beginPath(); x.arc(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(7, 11), 0, 6.28); x.fill(); } }
+    if (prof.cream){ x.strokeStyle = "rgba(255,250,240,.9)"; x.lineWidth = 9; x.lineCap = "round"; x.beginPath(); for (let a = 0; a < 12; a += .2){ const rr = 8 + a * 7; const px = cx + 20 + Math.cos(a)*rr, py = cy - 10 + Math.sin(a)*rr; a === 0 ? x.moveTo(px, py) : x.lineTo(px, py); } x.stroke(); }
+    if (prof.croutons){ for (let i = 0; i < 9; i++){ x.save(); x.translate(cx + R(-110, 110), cy + R(-110, 110)); x.rotate(R(0, 3)); x.fillStyle = "#D9A456"; x.fillRect(-14, -14, 28, 28); x.fillStyle = "rgba(120,70,20,.35)"; x.fillRect(-14, 6, 28, 8); x.restore(); } }
+    if (prof.seeds){ for (let i = 0; i < 14; i++){ x.save(); x.translate(cx + R(-90, 90), cy + R(-90, 90)); x.rotate(R(0, 3)); x.fillStyle = "#4C6B2C"; x.beginPath(); x.ellipse(0, 0, 9, 5, 0, 0, 6.28); x.fill(); x.restore(); } }
+    herbs(cx + 30, cy - 20, 60, 12);
+    // spoon
+    x.save(); x.shadowColor = "rgba(0,0,0,.35)"; x.shadowBlur = 14; x.shadowOffsetY = 6; x.fillStyle = "#C9CDD1";
+    x.translate(cx + 330, cy + 40); x.rotate(.25); x.beginPath(); x.ellipse(0, -170, 40, 60, 0, 0, 6.28); x.fill(); x.fillRect(-8, -120, 16, 330); x.restore();
+  } else if (prof.type === "bowl"){
+    x.save(); x.shadowColor = "rgba(0,0,0,.4)"; x.shadowBlur = 40; x.shadowOffsetY = 18; x.fillStyle = "#E9E4DA"; x.beginPath(); x.arc(cx, cy, 260, 0, 6.28); x.fill(); x.restore();
+    const bg = x.createRadialGradient(cx - 80, cy - 80, 30, cx, cy, 260); bg.addColorStop(0, "#FFFFFF"); bg.addColorStop(1, "#CFC8BB"); x.fillStyle = bg; x.beginPath(); x.arc(cx, cy, 260, 0, 6.28); x.fill();
+    if (prof.fill === "fries"){ for (let i = 0; i < 70; i++){ x.save(); x.translate(cx + R(-150, 150), cy + R(-150, 150)); x.rotate(R(0, 3.14)); x.fillStyle = r() > .3 ? "#F2C14E" : "#DFA43A"; x.fillRect(-60, -9, 120, 18); x.fillStyle = "rgba(255,255,255,.25)"; x.fillRect(-60, -9, 120, 5); x.restore(); } for (let i = 0; i < 40; i++){ x.fillStyle = "#fff"; x.fillRect(cx + R(-150,150), cy + R(-150,150), 3, 3); } }
+    else if (prof.fill === "cucumber"){ for (let i = 0; i < 34; i++){ const px = cx + R(-160, 160), py = cy + R(-160, 160); if (Math.hypot(px-cx, py-cy) > 175) continue; x.fillStyle = "#3E7A2C"; x.beginPath(); x.arc(px, py, 38, 0, 6.28); x.fill(); x.fillStyle = "#D6EBA8"; x.beginPath(); x.arc(px, py, 33, 0, 6.28); x.fill(); x.fillStyle = "#B9D98A"; for (let k = 0; k < 6; k++){ x.beginPath(); x.ellipse(px + Math.cos(k)*14, py + Math.sin(k)*14, 3, 5, k, 0, 6.28); x.fill(); } } herbs(cx, cy, 120, 22); }
+    else { for (let i = 0; i < 40; i++){ const a = R(0, 6.28), d = R(0, 170); blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(30, 55), R(20, 35), R(0, 3), ["#5E9C35","#7DB443","#3F7A2A","#9CC95A"][Math.floor(r()*4)], .3, 10); } for (let i = 0; i < 9; i++){ const a = R(0,6.28), d = R(0,140); blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, 26, 26, 0, "#D63F2E", .1, 10); } for (let i = 0; i < 8; i++){ const a = R(0,6.28), d = R(0,140); blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, 30, 12, R(0,3), "#F2C14E", .15, 10); } }
+  } else if (prof.type === "strudel" || prof.type === "crepe" || prof.type === "fruit"){
+    plate(300);
+    if (prof.type === "strudel"){
+      x.save(); x.translate(cx, cy); x.rotate(-.25);
+      x.fillStyle = "#C88B3E"; x.beginPath(); x.roundRect(-190, -80, 380, 160, 70); x.fill();
+      x.fillStyle = "#E2B36A"; x.beginPath(); x.roundRect(-190, -80, 380, 110, 60); x.fill();
+      x.fillStyle = "#F6E7C2"; x.beginPath(); x.ellipse(-190, 0, 40, 80, 0, 0, 6.28); x.fill();
+      x.fillStyle = "#D6A14C"; for (let i = 0; i < 18; i++){ x.beginPath(); x.arc(-190 + R(-25, 25), R(-55, 55), R(5, 9), 0, 6.28); x.fill(); }
+      x.restore();
+      for (let i = 0; i < 400; i++){ x.fillStyle = "rgba(255,255,255,.85)"; x.fillRect(cx + R(-200, 200), cy + R(-120, 80), 2, 2); }
+    } else if (prof.type === "crepe"){
+      x.save(); x.translate(cx, cy); x.rotate(.3); x.fillStyle = "#E9C27F"; x.beginPath(); x.roundRect(-200, -70, 400, 140, 60); x.fill();
+      x.fillStyle = "rgba(160,100,40,.3)"; for (let i = 0; i < 30; i++){ x.beginPath(); x.arc(R(-180, 180), R(-50, 50), R(4, 12), 0, 6.28); x.fill(); }
+      x.fillStyle = "#E8902D"; x.beginPath(); x.ellipse(-200, 0, 26, 64, 0, 0, 6.28); x.fill(); x.restore();
+      x.fillStyle = "#E8902D"; blob(cx + 140, cy + 140, 50, 30, .2, "#E8902D", .2, 12);
+    } else {
+      for (let i = 0; i < 28; i++){ const a = R(0, 6.28), d = R(0, 170); const cols = ["#E24A3B","#F2C14E","#7DB443","#8B4BA8","#F28C38"]; blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(26, 40), R(22, 34), R(0, 3), cols[Math.floor(r()*cols.length)], .2, 10); }
+      herbs(cx, cy, 120, 10);
+    }
+    cutlery();
+  } else {
+    plate(320);
+    cutlery();
+    const P = prof;
+    const px = P.one ? cx : cx - 70, py = P.one ? cy : cy - 30;
+    // sauce pools
+    if (["goulash","svieckova","curry","curryveg"].includes(P.protein)){
+      const sc = {goulash:"#8A3A1C", svieckova:"#E3A96A", curry:"#E0962F", curryveg:"#E39A3A"}[P.protein];
+      blob(px, py + 20, 170, 140, R(0, 3), shade(px, py, 170, shadeHex(sc, .15), shadeHex(sc, -.2)), .1, 16);
+    }
+    switch (P.protein){
+      case "chicken": for (let i = 0; i < 2; i++){ const bx = px - 40 + i*80, by = py - 10 + i*30; blob(bx, by, 110, 62, -.4 + i*.3, shade(bx, by, 110, "#E9B76B", "#B87633"), .08, 16); x.strokeStyle = "rgba(90,45,15,.55)"; x.lineWidth = 9; for (let k = -2; k <= 2; k++){ x.beginPath(); x.moveTo(bx - 70 + k*28, by - 40); x.lineTo(bx - 20 + k*28, by + 45); x.stroke(); } } break;
+      case "schnitzel": case "cheese": case "fishfried": { const col = P.protein === "cheese" ? ["#EEC062","#C78A2C"] : ["#E2A445","#B5731F"]; blob(px, py, 150, 100, -.3, shade(px, py, 150, col[0], col[1]), .14, 18); for (let i = 0; i < 160; i++){ x.fillStyle = r() > .5 ? "rgba(120,70,15,.5)" : "rgba(255,230,160,.6)"; x.fillRect(px + R(-120, 120), py + R(-75, 75), 4, 4); } if (P.protein === "cheese") { x.fillStyle = "#F6E5A8"; blob(px + 100, py + 30, 30, 18, .4, "#F6E5A8", .2, 10); } break; }
+      case "salmon": { blob(px, py, 140, 85, -.25, shade(px, py, 140, "#F7A177", "#D9663C"), .08, 16); x.strokeStyle = "rgba(255,235,220,.8)"; x.lineWidth = 6; for (let k = -3; k <= 3; k++){ x.beginPath(); x.moveTo(px + k*34 - 15, py - 70); x.quadraticCurveTo(px + k*34 + 15, py, px + k*34 - 5, py + 72); x.stroke(); } herbs(px, py - 20, 40, 6); break; }
+      case "burger": { x.fillStyle = "rgba(0,0,0,.2)"; x.beginPath(); x.arc(px + 10, py + 14, 150, 0, 6.28); x.fill(); x.fillStyle = "#6FA83C"; blob(px, py, 160, 160, 0, "#6FA83C", .15, 18); x.fillStyle = shade(px, py, 145, "#E2A356", "#B06E2A"); x.beginPath(); x.arc(px, py, 145, 0, 6.28); x.fill(); for (let i = 0; i < 40; i++){ x.save(); x.translate(px + R(-100, 100), py + R(-100, 100)); x.rotate(R(0, 3)); x.fillStyle = "#FFF3D6"; x.beginPath(); x.ellipse(0, 0, 6, 3, 0, 0, 6.28); x.fill(); x.restore(); } break; }
+      case "tofu": for (let i = 0; i < 9; i++){ x.save(); x.translate(px + R(-110, 110), py + R(-90, 90)); x.rotate(R(0, 3)); x.fillStyle = "#E8D29A"; x.fillRect(-28, -28, 56, 56); x.fillStyle = "#C69A4A"; x.fillRect(-28, 14, 56, 14); x.restore(); } for (let i = 0; i < 14; i++) blob(px + R(-120, 120), py + R(-100, 100), R(18, 30), R(10, 16), R(0, 3), ["#E2463A","#78B043","#F2B64A"][Math.floor(r()*3)], .2, 10); break;
+      case "curry": for (let i = 0; i < 16; i++) blob(px + R(-110, 110), py + R(-80, 100), R(22, 34), R(18, 26), R(0, 3), shade(px, py, 40, "#F2C482", "#C98C42"), .25, 10); herbs(px, py, 90, 10); break;
+      case "curryveg": for (let i = 0; i < 46; i++){ x.fillStyle = shade(px, py, 30, "#F3D59A", "#D3A35A"); x.beginPath(); x.arc(px + R(-120, 120), py + R(-90, 110), R(10, 15), 0, 6.28); x.fill(); } herbs(px, py, 100, 12); break;
+      case "goulash": for (let i = 0; i < 12; i++) blob(px + R(-100, 100), py + R(-70, 100), R(26, 38), R(22, 30), R(0, 3), shade(px, py, 40, "#8E4A2A", "#5A2A14"), .25, 10); for (let i = 0; i < 8; i++) blob(px + R(-100, 100), py + R(-70, 100), 18, 8, R(0,3), "#D3452E", .2, 8); break;
+      case "svieckova": for (let i = 0; i < 3; i++) blob(px - 40 + i*45, py - 10 + i*12, 70, 100, .25, shade(px, py, 90, "#9C6A4E", "#6C4330"), .06, 14); break;
+      case "leg": blob(px, py, 130, 100, .3, shade(px, py, 130, "#D79A4D", "#8C4E1E"), .1, 16); x.fillStyle = "#F1E5CF"; x.beginPath(); x.roundRect(px + 90, py - 110, 26, 90, 12); x.fill(); break;
+      case "roast": for (let i = 0; i < 3; i++){ const bx = px - 60 + i*55, by = py - 10 + i*10; blob(bx, by, 80, 110, .35, shade(bx, by, 100, "#C99572", "#8E5A3B"), .06, 14); x.strokeStyle = "#6B3A20"; x.lineWidth = 8; x.beginPath(); x.ellipse(bx, by, 78, 108, .35, 0, 6.28); x.stroke(); } break;
+      case "roastveg": for (let i = 0; i < 22; i++) blob(px + R(-130, 130), py + R(-110, 110), R(26, 44), R(20, 32), R(0, 3), ["#E5862F","#D8402E","#F0C14B","#6C9E3A","#7A3C7E"][Math.floor(r()*5)], .25, 10); break;
+    }
+    // one-pot dishes
+    if (P.one === "halusky"){ for (let i = 0; i < 140; i++){ const a = R(0, 6.28), d = Math.sqrt(r()) * 190; blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(14, 22), R(9, 14), R(0, 3), shade(cx, cy, 200, "#F2EBD6", "#D9CDA9"), .3, 8); } for (let i = 0; i < 60; i++){ const a = R(0, 6.28), d = Math.sqrt(r()) * 160; blob(cx + Math.cos(a)*d, cy + Math.sin(a)*d, R(10, 18), R(8, 14), 0, "#FFFFFF", .35, 8); } x.strokeStyle = "#3F8A2E"; x.lineWidth = 4; for (let i = 0; i < 30; i++){ const sx = cx + R(-150, 150), sy = cy + R(-150, 150); x.beginPath(); x.moveTo(sx, sy); x.lineTo(sx + R(-14, 14), sy + R(-14, 14)); x.stroke(); } }
+    if (P.one === "risotto"){ blob(cx, cy, 200, 180, 0, shade(cx, cy, 200, "#F4E6BE", "#D9C38A"), .08, 18); for (let i = 0; i < 260; i++){ x.save(); x.translate(cx + R(-170, 170), cy + R(-150, 150)); if (Math.hypot(x.getTransform().e - cx, x.getTransform().f - cy) > 180){ x.restore(); continue; } x.rotate(R(0, 3)); x.fillStyle = "rgba(255,255,255,.7)"; x.beginPath(); x.ellipse(0, 0, 7, 3.5, 0, 0, 6.28); x.fill(); x.restore(); } for (let i = 0; i < 26; i++){ x.fillStyle = "#6FAE3E"; x.beginPath(); x.arc(cx + R(-140, 140), cy + R(-130, 130), R(8, 11), 0, 6.28); x.fill(); } for (let i = 0; i < 90; i++){ x.fillStyle = "#FFF7DC"; x.fillRect(cx + R(-140, 140), cy + R(-130, 130), 5, 2); } }
+    if (P.one === "spaghetti" || P.one === "penne"){
+      if (P.one === "spaghetti"){ x.lineCap = "round"; for (let i = 0; i < 70; i++){ x.strokeStyle = r() > .5 ? "#F2D88E" : "#E5C46E"; x.lineWidth = 6; x.beginPath(); const a0 = R(0, 6.28); for (let a = 0; a < 6; a += .25){ const rr = R(30, 170); const qx = cx + Math.cos(a0 + a)*rr, qy = cy + Math.sin(a0 + a)*rr*.9; a === 0 ? x.moveTo(qx, qy) : x.lineTo(qx, qy); } x.stroke(); } blob(cx, cy - 10, 110, 90, 0, shade(cx, cy, 110, "#C9432C", "#8C2A17"), .2, 16); for (let i = 0; i < 20; i++) blob(cx + R(-80, 80), cy + R(-70, 60), R(10, 18), R(8, 14), 0, "#6E2814", .3, 8); }
+      else { for (let i = 0; i < 60; i++){ x.save(); const a = R(0, 6.28), d = Math.sqrt(r()) * 180; x.translate(cx + Math.cos(a)*d, cy + Math.sin(a)*d); x.rotate(R(0, 3)); x.fillStyle = shade(0, 0, 40, "#F5DB95", "#DDB463"); x.beginPath(); x.moveTo(-34, -12); x.lineTo(28, -16); x.lineTo(34, 12); x.lineTo(-28, 16); x.closePath(); x.fill(); x.strokeStyle = "rgba(170,120,40,.35)"; x.lineWidth = 2; for (let k = -24; k < 28; k += 9){ x.beginPath(); x.moveTo(k, -14); x.lineTo(k + 6, 14); x.stroke(); } x.restore(); } for (let i = 0; i < 10; i++) blob(cx + R(-140, 140), cy + R(-130, 130), 18, 10, R(0,3), "#A83A22", .3, 8); for (let i = 0; i < 12; i++) blob(cx + R(-140, 140), cy + R(-130, 130), R(14, 20), R(10, 14), R(0,3), "#F6EEDC", .3, 8); }
+      for (let i = 0; i < 160; i++){ x.fillStyle = "rgba(255,250,230,.95)"; x.fillRect(cx + R(-120, 120), cy + R(-110, 100), 3, 3); }
+      herbs(cx + 30, cy - 30, 50, 6);
+    }
+    if (P.one === "pancakes"){ for (let i = 0; i < 3; i++){ const bx = cx - 90 + i*80, by = cy - 30 + (i % 2)*60; blob(bx, by, 95, 85, R(0, 3), shade(bx, by, 95, "#E3AB52", "#A9681F"), .14, 16); for (let k = 0; k < 40; k++){ x.fillStyle = "rgba(110,60,15,.45)"; x.fillRect(bx + R(-70, 70), by + R(-60, 60), 4, 3); } } x.fillStyle = "#FBF7EE"; blob(cx + 140, cy + 130, 55, 45, 0, "#FBF7EE", .12, 14); herbs(cx + 140, cy + 120, 20, 5); }
+    // side
+    const sx = cx + 130, sy = cy + 50;
+    switch (P.side){
+      case "rice": blob(sx, sy, 120, 100, 0, "#F6F1E4", .1, 16); for (let i = 0; i < 260; i++){ const a = R(0, 6.28), d = Math.sqrt(r()) * 105; x.save(); x.translate(sx + Math.cos(a)*d, sy + Math.sin(a)*d*.85); x.rotate(R(0, 3)); x.fillStyle = r() > .5 ? "#FFFFFF" : "#E6DFCB"; x.beginPath(); x.ellipse(0, 0, 8, 3.5, 0, 0, 6.28); x.fill(); x.restore(); } break;
+      case "potatoes": for (let i = 0; i < 9; i++) blob(sx + R(-80, 80), sy + R(-70, 70), R(30, 42), R(26, 36), R(0, 3), shade(sx, sy, 60, "#F3D27A", "#D2A043"), .2, 12); herbs(sx, sy, 70, 10); break;
+      case "potsalad": for (let i = 0; i < 26; i++) blob(sx + R(-90, 90), sy + R(-80, 80), R(18, 26), R(14, 20), R(0, 3), "#F2E2B0", .25, 10); for (let i = 0; i < 18; i++) blob(sx + R(-90, 90), sy + R(-80, 80), 9, 7, 0, ["#E37A2B","#7AAE3E"][i % 2], .2, 8); break;
+      case "mash": blob(sx, sy, 115, 100, 0, shade(sx, sy, 110, "#FFF5D6", "#E7D49C"), .1, 16); x.strokeStyle = "rgba(200,170,100,.45)"; x.lineWidth = 6; x.beginPath(); for (let a = 0; a < 14; a += .2){ const rr = a * 6; const qx = sx + Math.cos(a)*rr, qy = sy + Math.sin(a)*rr*.85; a === 0 ? x.moveTo(qx, qy) : x.lineTo(qx, qy); } x.stroke(); x.fillStyle = "#F4D35E"; blob(sx, sy - 4, 22, 16, 0, "#F6D55F", .1, 10); break;
+      case "dumplings": for (let i = 0; i < 4; i++){ const bx = sx - 60 + i*42, by = sy - 30 + i*20; x.save(); x.translate(bx, by); x.rotate(.5); x.fillStyle = "#EDE5D0"; x.beginPath(); x.ellipse(0, 0, 32, 78, 0, 0, 6.28); x.fill(); x.fillStyle = "rgba(170,150,110,.45)"; for (let k = 0; k < 24; k++){ x.beginPath(); x.arc(R(-20, 20), R(-60, 60), R(2, 4), 0, 6.28); x.fill(); } x.strokeStyle = "#C9B58A"; x.lineWidth = 4; x.beginPath(); x.ellipse(0, 0, 32, 78, 0, 0, 6.28); x.stroke(); x.restore(); } break;
+      case "fries": for (let i = 0; i < 30; i++){ x.save(); x.translate(sx + R(-90, 90), sy + R(-80, 80)); x.rotate(R(0, 3.14)); x.fillStyle = r() > .3 ? "#F2C14E" : "#DFA43A"; x.fillRect(-55, -8, 110, 16); x.restore(); } break;
+      case "quinoa": for (let i = 0; i < 320; i++){ const a = R(0, 6.28), d = Math.sqrt(r()) * 105; x.fillStyle = r() > .5 ? "#EAD9A8" : "#CDB57A"; x.beginPath(); x.arc(sx + Math.cos(a)*d, sy + Math.sin(a)*d*.85, 4, 0, 6.28); x.fill(); } break;
+      case "noodles": x.lineCap = "round"; for (let i = 0; i < 40; i++){ x.strokeStyle = "#EED597"; x.lineWidth = 7; x.beginPath(); const a0 = R(0, 6.28); for (let a = 0; a < 4; a += .3){ const rr = R(20, 100); const qx = sx + Math.cos(a0 + a)*rr, qy = sy + Math.sin(a0 + a)*rr*.85; a === 0 ? x.moveTo(qx, qy) : x.lineTo(qx, qy); } x.stroke(); } break;
+    }
+    // extras
+    const ex = cx + 20, ey = cy + 175;
+    if (P.extra === "peas" && P.side === "rice"){ for (let i = 0; i < 26; i++){ x.fillStyle = shade(sx, sy, 20, "#9BD15A", "#4F8E26"); x.beginPath(); x.arc(sx + R(-90, 90), sy + R(-75, 75), 9, 0, 6.28); x.fill(); } }
+    else if (P.extra === "peas"){ for (let i = 0; i < 24; i++){ x.fillStyle = "#6FB03A"; x.beginPath(); x.arc(ex + R(-60, 60), ey + R(-30, 30), 10, 0, 6.28); x.fill(); } }
+    if (P.extra === "cabbage"){ x.lineCap = "round"; for (let i = 0; i < 40; i++){ x.strokeStyle = r() > .4 ? "#7B2F6B" : "#9C4A86"; x.lineWidth = 8; x.beginPath(); const qx = ex + R(-90, 90), qy = ey + R(-40, 30); x.moveTo(qx, qy); x.quadraticCurveTo(qx + R(-30, 30), qy + R(-20, 20), qx + R(-40, 40), qy + R(-20, 20)); x.stroke(); } }
+    if (P.extra === "cranberry"){ blob(ex - 60, ey - 10, 50, 36, 0, "#F8F2E7", .1, 12); for (let i = 0; i < 16; i++){ x.fillStyle = shade(ex, ey, 14, "#E24B4B", "#9C1C24"); x.beginPath(); x.arc(ex + 30 + R(-30, 30), ey + R(-20, 20), 11, 0, 6.28); x.fill(); } x.fillStyle = "#F7EFD9"; blob(ex - 60, ey - 10, 36, 26, 0, "#FFFFFF", .15, 10); }
+    if (P.extra === "greens" || (!P.extra && !P.one && P.protein !== "burger")){ for (let i = 0; i < 12; i++) blob(ex + R(-70, 70), ey + R(-35, 25), R(24, 38), R(14, 22), R(0, 3), ["#5E9C35","#7DB443","#3F7A2A"][Math.floor(r()*3)], .3, 10); for (let i = 0; i < 4; i++) blob(ex + R(-60, 60), ey + R(-25, 20), 20, 20, 0, "#D63F2E", .1, 10); }
+    if (P.protein === "burger" && P.side === "fries"){ /* fries already drawn */ }
+    if (P.lemon){ x.save(); x.translate(px + 110, py - 100); x.rotate(.6); x.fillStyle = "#F5D23A"; x.beginPath(); x.arc(0, 0, 42, Math.PI, 0); x.fill(); x.fillStyle = "#FFF3A8"; x.beginPath(); x.arc(0, 0, 34, Math.PI, 0); x.fill(); x.strokeStyle = "#F5D23A"; x.lineWidth = 3; for (let k = 1; k < 6; k++){ const a = Math.PI + k * Math.PI / 6; x.beginPath(); x.moveTo(0, 0); x.lineTo(Math.cos(a)*34, Math.sin(a)*34); x.stroke(); } x.restore(); }
+    if (["chicken","roast","leg","schnitzel"].includes(P.protein)) herbs(px - 10, py - 40, 50, 6);
+  }
+  return new Promise(res => c.toBlob(b => b ? res(b) : c.toBlob(res, "image/png"), "image/webp", 0.86));
+}
+function shadeHex(hex, amt){
+  const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = n >> 8 & 255, b = n & 255;
+  const f = v => Math.max(0, Math.min(255, Math.round(amt < 0 ? v * (1 + amt) : v + (255 - v) * amt)));
+  return "#" + [f(r), f(g), f(b)].map(v => v.toString(16).padStart(2, "0")).join("");
+}
+
+async function generateSamplePhotos(btn){
+  const list = adm.missing; if (!list.length) return;
+  if (!await askConfirm(`Vytvoriť ukážkové fotky pre ${list.length} ${plural(list.length,"jedlo","jedlá","jedál")}? Fotky sa uložia do Supabase Storage. Jedlá s rovnakým názvom dostanú spoločnú fotku.`, "Vytvoriť fotky")) return;
+  btn.disabled = true;
+  const prog = $("#genProg"); prog.hidden = false;
+  const byName = new Map(); // same name => shared image (explicit admin choice in this dialog)
+  let done = 0, failed = 0;
+  for (const m of list){
+    try {
+      const key = m.name.trim().toLowerCase();
+      let imageId = byName.get(key);
+      if (!imageId){
+        const kind = (state.catById.get(m.category_id) || {}).kind || "main";
+        const blob = await drawDish(m, kind);
+        imageId = await registerUpload(blob, m.name, `Ilustračná fotka: ${m.name}`);
+        byName.set(key, imageId);
+      }
+      await A("admin_set_meal_image", {p_meal_id: m.id, p_image_id: imageId});
+    } catch (err) {
+      failed++;
+      if (/heslo/i.test(err.message)){ admError(err); return; }
+      console.warn(err);
+      if (failed === 1) toast(err.message, true);
+    }
+    done++; prog.firstElementChild.style.width = `${Math.round(done / list.length * 100)}%`;
+  }
+  toast(failed ? `Hotovo, ${failed} fotiek sa nepodarilo vytvoriť.` : "Fotky sú vytvorené a uložené.");
+  await loadImages(); await admRender();
+}
+
+/* =====================================================================
+   EVENTS
+   ===================================================================== */
+const actions = {
+  "week": (el) => { state.weekStart = addDays(state.weekStart, 7 * Number(el.dataset.dir)); state.selected = state.weekStart; loadWeek(); },
+  "week-today": () => { const t = nowBA().date; state.weekStart = mondayOf(t); state.selected = defaultDay(); loadWeek(); },
+  "day": (el) => { state.selected = el.dataset.date; renderStrip(); renderDay(); },
+  "detail": (el) => showDetail(el.dataset.id),
+  "order": (el) => showOrder(el.dataset.id),
+  "my-orders": () => showMyOrders(),
+  "allergens": () => showAllergens(),
+  "cancel": async (el) => {
+    if (!await askConfirm("Naozaj chcete zrušiť túto objednávku?", "Zrušiť objednávku", true)) return;
+    try { await rpc("cancel_order", {p_token: el.dataset.token}); toast("Objednávka zrušená."); await Promise.all([loadMyOrders(), refreshStats()]); renderAll(); showMyOrders(); }
+    catch (e) { toast(e.message, true); }
+  },
+  "rate": async (el) => {
+    try { await rpc("rate_order", {p_token: el.dataset.token, p_rating: Number(el.dataset.n)}); toast("Ďakujeme za hodnotenie."); await Promise.all([loadMyOrders(), refreshStats()]); renderAll(); showMyOrders(); }
+    catch (e) { toast(e.message, true); }
+  },
+  "admin": () => showLogin(),
+  "adm-close": () => closeAdmin(),
+  "adm-logout": () => admLogout(),
+  "adm-tab": (el) => { adm.tab = el.dataset.tab; admRender(); },
+  "adm-week": (el) => { adm.weekStart = addDays(adm.weekStart, 7 * Number(el.dataset.dir)); adm.date = adm.weekStart; admRender(); },
+  "adm-day": (el) => { adm.date = el.dataset.date; admRender(); },
+  "adm-meal-new": () => openMealEditor(null),
+  "adm-meal-edit": (el) => openMealEditor(adm.week.meals.find(m => m.id === el.dataset.id)),
+  "adm-meal-del": async (el) => {
+    const m = adm.week.meals.find(x => x.id === el.dataset.id);
+    if (!await askConfirm(`Vymazať jedlo „${m.name}“?`, "Vymazať", true)) return;
+    try { await A("admin_delete_meal", {p_id: m.id}); toast("Jedlo vymazané."); admRender(); } catch (e) { admError(e); }
+  },
+  "adm-toggle": async (el) => {
+    const m = adm.week.meals.find(x => x.id === el.dataset.id);
+    try { await A("admin_save_meal", {p_meal: {...m, image: undefined, is_available: !m.is_available, allergens: m.allergens.map(String), image_id: m.image_id || ""}}); admRender(); } catch (e) { admError(e); }
+  },
+  "adm-copy": async () => {
+    const to = addDays(adm.weekStart, 7);
+    if (!await askConfirm(`Skopírovať všetky jedlá z týždňa ${isoWeek(adm.weekStart)} do týždňa ${isoWeek(to)}?`, "Skopírovať")) return;
+    try { const n = await A("admin_copy_week", {p_from_monday: adm.weekStart, p_to_monday: to}); toast(`Skopírovaných ${n} jedál.`); adm.weekStart = to; adm.date = to; admRender(); } catch (e) { admError(e); }
+  },
+  "adm-gen": (el) => generateSamplePhotos(el),
+  "adm-print": () => window.print(),
+  "ed-pick": () => openPicker(),
+  "ed-clear": () => { ed.imageId = null; ed.imagePath = null; ed.file = null; if (ed.preview) URL.revokeObjectURL(ed.preview); ed.preview = null; const f = $("#edFile"); if (f) f.value = ""; renderEdPreview(); },
+  "pick": (el) => pickImage(el.dataset.id),
+  "img-edit": (el) => editImage(el.dataset.id),
+  "img-del": (el) => deleteImage(el.dataset.id),
+  "cat-save": (el) => saveCat(el),
+  "cat-del": (el) => delCat(el)
+};
+document.addEventListener("click", (e) => {
+  const close = e.target.closest("[data-close]");
+  if (close){ e.preventDefault(); close.closest("dialog").close(); return; }
+  const el = e.target.closest("[data-act]");
+  if (el && actions[el.dataset.act]){ e.preventDefault(); actions[el.dataset.act](el, e); return; }
+  if (e.target.tagName === "DIALOG" && !e.target.classList.contains("fullscreen")){
+    const b = e.target.getBoundingClientRect();
+    if (e.clientX < b.left || e.clientX > b.right || e.clientY < b.top || e.clientY > b.bottom) e.target.close();
+  }
+});
+$("#brandLink").addEventListener("click", (e) => { e.preventDefault(); actions["week-today"](); });
+
+function defaultDay(){
+  const t = nowBA().date, wd = weekday(t);
+  if (wd > 4) return addDays(mondayOf(t), 7);
+  return t;
+}
+
+/* =====================================================================
+   START
+   ===================================================================== */
+async function start(){
+  if (/SEM_VLOZ/.test(SUPABASE_URL + SUPABASE_PUBLISHABLE_KEY)){
+    document.querySelector(".weekbar").hidden = true;
+    $("#dayView").innerHTML = `<div class="setup"><h1>Ešte chýba prepojenie so Supabase</h1>
+      <p class="muted" style="margin-bottom:14px">Otvorte súbor <code>index.html</code> v Poznámkovom bloku a na začiatku skriptu vyplňte:</p>
+      <ol><li><code>SUPABASE_URL</code> – Project URL, napr. <code>https://abcd1234.supabase.co</code></li>
+      <li><code>SUPABASE_PUBLISHABLE_KEY</code> – Publishable key, začína <code>sb_publishable_</code></li></ol>
+      <p class="muted" style="margin-top:14px">Údaje nájdete v Supabase v časti Project Settings → API Keys. Potom súbor uložte a znova nahrajte na Netlify.</p></div>`;
+    return;
+  }
+  const t = nowBA().date;
+  const dd = defaultDay();
+  state.today = t; state.weekStart = mondayOf(dd); state.selected = dd;
+  renderAll();
+  try { await loadBase(); }
+  catch (e) {
+    $("#dayView").innerHTML = `<div class="setup"><h1>Jedálny lístok sa nepodarilo načítať</h1><p>${esc(e.message)}</p></div>`;
+    return;
+  }
+  await Promise.all([loadWeek(), loadMyOrders()]);
+  renderAll();
+  // keep "today" & deadlines fresh
+  setInterval(() => { const n = nowBA().date; if (n !== state.today){ state.today = n; } renderStrip(); renderDay(); }, 60000);
+}
+start();
+</script>
+</body>
+</html>
